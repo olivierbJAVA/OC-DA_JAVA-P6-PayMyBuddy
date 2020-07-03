@@ -1,8 +1,5 @@
 package com.paymybuddy.factory;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-
 import com.paymybuddy.configuration.RepositoryJdbcConfiguration;
 import com.paymybuddy.repository.ITransactionRepository;
 import com.paymybuddy.repository.IUtilisateurRepository;
