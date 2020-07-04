@@ -1,3 +1,5 @@
+/src/main/resources/paymybuddy.properties
+/src/test/resources/paymybuddyTest.properties
 .classpath
 .project
 .settings
