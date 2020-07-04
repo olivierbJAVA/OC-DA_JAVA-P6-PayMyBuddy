@@ -17,7 +17,7 @@ import com.paymybuddy.entity.Utilisateur;
 import com.paymybuddy.factory.RepositoryFactory;
 
 /**
- * Class managing the data persistence for the financial transactions.
+ * Class managing the data persistence for the financial transactions using JDBC implementation.
  */
 public class TransactionRepositoryJdbcImpl implements ITransactionRepository {
 
@@ -277,7 +277,7 @@ public class TransactionRepositoryJdbcImpl implements ITransactionRepository {
 			return transactions;
 
 		} catch (Exception ex) {
-			logger.info("Error in getTransactions.", ex);
+			logger.info("Error in getting transactions.", ex);
 			return null;
 		} finally {
 			if (rs != null) {

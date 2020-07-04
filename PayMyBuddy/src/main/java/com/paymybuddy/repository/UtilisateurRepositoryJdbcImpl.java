@@ -14,7 +14,7 @@ import com.paymybuddy.configuration.RepositoryJdbcConfiguration;
 import com.paymybuddy.entity.Utilisateur;
 
 /**
- * Class managing the data persistence for the user.
+ * Class managing the data persistence for the user using JDBC implementation.
  */
 public class UtilisateurRepositoryJdbcImpl implements IUtilisateurRepository {
 
