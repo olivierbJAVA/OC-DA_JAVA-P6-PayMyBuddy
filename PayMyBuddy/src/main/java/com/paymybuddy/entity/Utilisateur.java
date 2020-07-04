@@ -1,11 +1,14 @@
 package com.paymybuddy.entity;
 
+import java.io.Serializable;
 import java.util.Set;
 
 /**
  * Class materializing a user of the application.
  */
-public class Utilisateur {
+public class Utilisateur implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private String email;
 
