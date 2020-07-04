@@ -45,7 +45,4 @@ public interface IUtilisateurRepository {
 	 * @param connection  The connection to be added to the user
 	 */
 	public void addConnection(Utilisateur utilisateur, Utilisateur connection);
-
-	// A supprimer
-	public void updateAll(Utilisateur utilisateur);
 }
