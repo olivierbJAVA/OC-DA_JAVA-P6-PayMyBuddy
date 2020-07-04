@@ -6,9 +6,17 @@ import javax.persistence.Persistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.paymybuddy.configuration.RepositoryJdbcConfiguration;
+import com.paymybuddy.repository.ITransactionRepository;
+import com.paymybuddy.repository.IUtilisateurRepository;
+import com.paymybuddy.repository.TransactionRepositoryJdbcImpl;
+import com.paymybuddy.repository.TransactionRepositoryJpaImpl;
+import com.paymybuddy.repository.UtilisateurRepositoryJdbcImpl;
+import com.paymybuddy.repository.UtilisateurRepositoryJpaImpl;
+
 /**
  * Class Factory in charge of the construction of Utilisateur repository and
- * Transaction repository
+ * Transaction repository for JDBC and JPA implementations
  */
 public class RepositoryFactory {
 
@@ -47,7 +55,7 @@ public class RepositoryFactory {
 
 			logger.info("Factory : Creation JPA Transaction Repository OK");
 
-		// If repository name is not JDBC or JPA we create a JPA repository by default
+			// If repository name is not JDBC or JPA we create a JPA repository by default
 		} else {
 
 			EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(properties);
