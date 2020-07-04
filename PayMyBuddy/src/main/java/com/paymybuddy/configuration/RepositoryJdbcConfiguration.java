@@ -44,6 +44,9 @@ public class RepositoryJdbcConfiguration {
 	 * @return An instance of a JDBC repository configuration
 	 */
 	public static RepositoryJdbcConfiguration getRepositoryConfiguration(String propertiesFilePath) {
+
+		// We create an instance of the RepositoryJdbcConfiguration only if it does not
+		// already exist
 		if (repositoryConfiguration == null) {
 			repositoryConfiguration = getRepositoryConfigurationInstance(propertiesFilePath);
 		}
@@ -57,11 +60,12 @@ public class RepositoryJdbcConfiguration {
 		String username = null;
 		String password = null;
 
+		// We load the properties file for the JDBC database connection
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		InputStream propertiesFile = classLoader.getResourceAsStream(propertiesFilePath);
 
 		if (propertiesFile == null) {
-			logger.error("Le fichier properties {} est introuvable.", propertiesFilePath);
+			logger.error("The properties file for the JDBC database connection {} was not found.", propertiesFilePath);
 		}
 
 		try {
@@ -70,12 +74,14 @@ public class RepositoryJdbcConfiguration {
 			username = properties.getProperty(PROPERTY_USER_NAME);
 			password = properties.getProperty(PROPERTY_PASSWORD);
 		} catch (IOException e) {
-			logger.error("Impossible de charger le fichier properties {}", propertiesFilePath);
+			logger.error("Unable to load the properties file for the JDBC database connection {}", propertiesFilePath);
 		}
 
 		RepositoryJdbcConfiguration repositoryConfigurationInstance = new RepositoryJdbcConfiguration(url, username,
 				password);
 
+		logger.info("RepositoryJdbcConfiguration sucessfully created.");
+		
 		return repositoryConfigurationInstance;
 	}
 
@@ -86,9 +92,10 @@ public class RepositoryJdbcConfiguration {
 	 */
 	public Connection getConnection() {
 		try {
+			logger.info("Get connection to the database.");
 			return DriverManager.getConnection(url, username, password);
 		} catch (SQLException e) {
-			logger.error("Impossible d'obtenir la connexion à la base de donnée.", e);
+			logger.error("Error during connection to the database.", e);
 			return null;
 		}
 	}

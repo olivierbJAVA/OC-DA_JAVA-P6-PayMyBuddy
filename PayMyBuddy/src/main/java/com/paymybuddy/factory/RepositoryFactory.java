@@ -1,5 +1,8 @@
 package com.paymybuddy.factory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.paymybuddy.configuration.RepositoryJdbcConfiguration;
 import com.paymybuddy.repository.ITransactionRepository;
 import com.paymybuddy.repository.IUtilisateurRepository;
@@ -12,6 +15,8 @@ import com.paymybuddy.repository.UtilisateurRepositoryJdbcImpl;
  */
 public class RepositoryFactory {
 
+	private static final Logger logger = LoggerFactory.getLogger(RepositoryFactory.class);
+	
 	private static IUtilisateurRepository utilisateurRepository = null;
 
 	private static ITransactionRepository transactionRepository = null;
@@ -26,6 +31,8 @@ public class RepositoryFactory {
 	 */
 	public static IUtilisateurRepository getUtilisateurRepository(String properties) {
 
+		// We create an instance of the UtilisateurRepositoryJdbcImpl only if it does not
+		// already exist
 		if (utilisateurRepository == null) {
 
 			RepositoryJdbcConfiguration repositoryConfiguration = RepositoryJdbcConfiguration
@@ -34,6 +41,9 @@ public class RepositoryFactory {
 			utilisateurRepository = new UtilisateurRepositoryJdbcImpl(repositoryConfiguration);
 
 		}
+		
+		logger.info("UtilisateurRepositoryJdbcImpl sucessfully created.");
+		
 		return utilisateurRepository;
 	}
 
@@ -47,6 +57,8 @@ public class RepositoryFactory {
 	 */
 	public static ITransactionRepository getTransactionRepository(String properties) {
 
+		// We create an instance of the TransactionRepositoryJdbcImpl only if it does not
+		// already exist
 		if (transactionRepository == null) {
 
 			RepositoryJdbcConfiguration repositoryConfiguration = RepositoryJdbcConfiguration
@@ -55,6 +67,9 @@ public class RepositoryFactory {
 			transactionRepository = new TransactionRepositoryJdbcImpl(repositoryConfiguration);
 
 		}
+		
+		logger.info("TransactionRepositoryJdbcImpl sucessfully created.");
+		
 		return transactionRepository;
 	}
 

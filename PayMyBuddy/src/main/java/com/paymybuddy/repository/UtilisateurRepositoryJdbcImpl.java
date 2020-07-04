@@ -45,11 +45,13 @@ public class UtilisateurRepositoryJdbcImpl implements IUtilisateurRepository {
 			int updateRowCount = ps.executeUpdate();
 
 			if (updateRowCount != 1) {
-				logger.error("Error in Utilisateur insertion");
+				logger.error("Error in Utilisateur creation.");
+			} else {
+				logger.info("Utilisateur sucessfully created.");
 			}
 
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			logger.error("Error in Utilisateur creation", ex);
 		}
 	}
 
@@ -72,11 +74,13 @@ public class UtilisateurRepositoryJdbcImpl implements IUtilisateurRepository {
 			int updateRowCountUtilisateur = psUtilisateur.executeUpdate();
 
 			if (updateRowCountUtilisateur != 1) {
-				logger.error("Error in Utilisateur update");
+				logger.error("Error in Utilisateur update.");
+			} else {
+				logger.info("Utilisateur sucessfully updated.");
 			}
 
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			logger.error("Error in Utilisateur update.", ex);
 		}
 	}
 
@@ -126,29 +130,32 @@ public class UtilisateurRepositoryJdbcImpl implements IUtilisateurRepository {
 				if (!connections.isEmpty()) {
 					utilisateur.setConnection(connections);
 				}
+
+				logger.info("Utilisateur with email {} sucessfully read.", email);
+
 			} else {
 				logger.error("Error : Utilisateur with email {} not found", email);
 			}
 			return utilisateur;
 
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			logger.error("Error in Utilisateur read.", ex);
 			return null;
 		} finally {
 			if (rsUtilisateur != null) {
 				try {
 					rsUtilisateur.close();
-					logger.info("Closing Result Set");
+					logger.info("Closing Result Set.");
 				} catch (SQLException e) {
-					logger.error("Error while closing result set", e);
+					logger.error("Error while closing result set.", e);
 				}
 			}
 			if (rsConnections != null) {
 				try {
 					rsConnections.close();
-					logger.info("Closing Result Set");
+					logger.info("Closing Result Set.");
 				} catch (SQLException e) {
-					logger.error("Error while closing result set", e);
+					logger.error("Error while closing result set.", e);
 				}
 			}
 		}
@@ -183,13 +190,17 @@ public class UtilisateurRepositoryJdbcImpl implements IUtilisateurRepository {
 			postgreCon.setAutoCommit(auto);
 
 			if (updateRowCount != 1) {
-				logger.error("Error in User {} deletion", email);
+				logger.error("Error in Utilisateur with email {} deletion", email);
+			} else {
+				logger.info("Utilisateur with email {} sucessfully deleted.", email);
 			}
 
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			logger.error("Error in Utilisateur deletion.", ex);
 			try {
-				postgreCon.rollback();
+				if (postgreCon != null) {
+					postgreCon.rollback();
+				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -198,17 +209,17 @@ public class UtilisateurRepositoryJdbcImpl implements IUtilisateurRepository {
 			if (postgreCon != null) {
 				try {
 					postgreCon.close();
-					logger.info("Closing Connection");
+					logger.info("Closing Connection.");
 				} catch (SQLException e) {
-					logger.error("Error while closing Connection", e);
+					logger.error("Error while closing Connection.", e);
 				}
 			}
 			if (ps != null) {
 				try {
 					ps.close();
-					logger.info("Closing Prepared Statement");
+					logger.info("Closing Prepared Statement.");
 				} catch (SQLException e) {
-					logger.error("Error while closing Prepared Statement", e);
+					logger.error("Error while closing Prepared Statement.", e);
 				}
 			}
 		}
@@ -235,11 +246,13 @@ public class UtilisateurRepositoryJdbcImpl implements IUtilisateurRepository {
 			int updateRowCount = ps.executeUpdate();
 
 			if (updateRowCount != 1) {
-				logger.error("Error in Connection insertion");
+				logger.error("Error in Connection add");
+			} else {
+				logger.info("Connection sucessfully added.");
 			}
 
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			logger.info("Error in Connection add.", ex);
 		}
 
 	}

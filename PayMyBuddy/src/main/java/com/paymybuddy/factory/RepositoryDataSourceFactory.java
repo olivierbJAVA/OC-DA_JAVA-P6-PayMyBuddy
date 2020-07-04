@@ -1,5 +1,7 @@
 package com.paymybuddy.factory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 /**
@@ -8,6 +10,8 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
  */
 public class RepositoryDataSourceFactory {
 
+	private static final Logger logger = LoggerFactory.getLogger(RepositoryDataSourceFactory.class);
+
 	/**
 	 * Create a DriverManager DataSource for the database.
 	 * 
@@ -15,7 +19,7 @@ public class RepositoryDataSourceFactory {
 	 * 
 	 * @param url             The url of the database
 	 * 
-	 * @param url             The username for the connection to the database
+	 * @param username        The username for the connection to the database
 	 * 
 	 * @param password        The password for the connection to the database
 	 * 
@@ -30,6 +34,8 @@ public class RepositoryDataSourceFactory {
 		dataSource.setUrl(url);
 		dataSource.setUsername(username);
 		dataSource.setPassword(password);
+
+		logger.info("DriverManager DataSource sucessfully created.");
 
 		return dataSource;
 	}
