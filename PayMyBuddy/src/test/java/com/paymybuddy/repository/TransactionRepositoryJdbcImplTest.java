@@ -82,7 +82,7 @@ public class TransactionRepositoryJdbcImplTest {
 		transactionToDelete.setInitiateur(initiateur);
 		transactionToDelete.setContrepartie(contrepartie);
 		transactionToDelete.setMontant(123d);
-		transactionToDelete.setCommentaire("Transaction created for test purpose");
+		transactionToDelete.setCommentaire("Transaction to delete for test purpose");
 
 		transactionToDelete = transactionRepositoryImplUnderTest.create(transactionToDelete);
 
@@ -103,7 +103,7 @@ public class TransactionRepositoryJdbcImplTest {
 		transactionToUpdate.setInitiateur(initiateur);
 		transactionToUpdate.setContrepartie(contrepartie);
 		transactionToUpdate.setMontant(321d);
-		transactionToUpdate.setCommentaire("Transaction created for test purpose");
+		transactionToUpdate.setCommentaire("Transaction to update for test purpose");
 
 		transactionToUpdate = transactionRepositoryImplUnderTest.create(transactionToUpdate);
 
