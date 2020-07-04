@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 
 import com.paymybuddy.repository.ITransactionRepository;
 import com.paymybuddy.repository.IUtilisateurRepository;
+import com.paymybuddy.repository.TransactionRepositoryJpaImpl;
+import com.paymybuddy.repository.UtilisateurRepositoryJpaImpl;
 
 
 /**
