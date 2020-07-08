@@ -24,6 +24,8 @@ public class ServiceFactory {
 	/**
 	 * Create a Transaction service.
 	 * 
+	 * @param repositoryTxManager   The Tx manager to be used by the Service
+	 * 
 	 * @param utilisateurRepository The Utilisateur repository to be used by the
 	 *                              Service
 	 * 
@@ -48,6 +50,8 @@ public class ServiceFactory {
 
 	/**
 	 * Create a Utilisateur service.
+	 * 
+	 * @param repositoryTxManager   The Tx manager to be used by the Service
 	 * 
 	 * @param utilisateurRepository The Utilisateur repository to be used by the
 	 *                              Service

@@ -34,7 +34,7 @@ public class TransactionRepositoryJpaTxHibernateImplTest {
 
 	private ITransactionRepository transactionRepositoryImplUnderTest;
 
-	private IUtilisateurRepository utilisateurRepositoryImplUnderTest;
+	private IUtilisateurRepository utilisateurRepositoryImp;
 
 	@BeforeAll
 	private static void setUpAllTest() {
@@ -56,7 +56,7 @@ public class TransactionRepositoryJpaTxHibernateImplTest {
 
 		transactionRepositoryImplUnderTest = RepositoryFactory.getTransactionRepository(repositoryTxManager);
 
-		utilisateurRepositoryImplUnderTest = RepositoryFactory.getUtilisateurRepository(repositoryTxManager);
+		utilisateurRepositoryImp = RepositoryFactory.getUtilisateurRepository(repositoryTxManager);
 
 		repositoryTxManager.openCurrentSessionWithTx();
 	}
@@ -70,8 +70,8 @@ public class TransactionRepositoryJpaTxHibernateImplTest {
 	@Test
 	public void createTransaction() {
 		// ARRANGE
-		Utilisateur initiateur = utilisateurRepositoryImplUnderTest.read("abc@test.com");
-		Utilisateur contrepartie = utilisateurRepositoryImplUnderTest.read("def@test.com");
+		Utilisateur initiateur = utilisateurRepositoryImp.read("abc@test.com");
+		Utilisateur contrepartie = utilisateurRepositoryImp.read("def@test.com");
 
 		Transaction transactionToCreate = new Transaction();
 		transactionToCreate.setInitiateur(initiateur);
@@ -103,8 +103,8 @@ public class TransactionRepositoryJpaTxHibernateImplTest {
 	@Test
 	public void deleteTransaction() {
 		// ARRANGE
-		Utilisateur initiateur = utilisateurRepositoryImplUnderTest.read("abc@test.com");
-		Utilisateur contrepartie = utilisateurRepositoryImplUnderTest.read("def@test.com");
+		Utilisateur initiateur = utilisateurRepositoryImp.read("abc@test.com");
+		Utilisateur contrepartie = utilisateurRepositoryImp.read("def@test.com");
 
 		Transaction transactionToDelete = new Transaction();
 		transactionToDelete.setInitiateur(initiateur);
@@ -125,8 +125,8 @@ public class TransactionRepositoryJpaTxHibernateImplTest {
 	@Test
 	public void updateTransaction() {
 		// ARRANGE
-		Utilisateur initiateur = utilisateurRepositoryImplUnderTest.read("abc@test.com");
-		Utilisateur contrepartie = utilisateurRepositoryImplUnderTest.read("def@test.com");
+		Utilisateur initiateur = utilisateurRepositoryImp.read("abc@test.com");
+		Utilisateur contrepartie = utilisateurRepositoryImp.read("def@test.com");
 
 		Transaction transactionToUpdate = new Transaction();
 		transactionToUpdate.setInitiateur(initiateur);
@@ -153,8 +153,8 @@ public class TransactionRepositoryJpaTxHibernateImplTest {
 	@Test
 	public void readTransaction_whenTransactionExist() {
 		// ARRANGE
-		Utilisateur initiateur = utilisateurRepositoryImplUnderTest.read("abc@test.com");
-		Utilisateur contrepartie = utilisateurRepositoryImplUnderTest.read("def@test.com");
+		Utilisateur initiateur = utilisateurRepositoryImp.read("abc@test.com");
+		Utilisateur contrepartie = utilisateurRepositoryImp.read("def@test.com");
 
 		Transaction transactionToRead = new Transaction();
 		transactionToRead.setInitiateur(initiateur);
@@ -194,8 +194,8 @@ public class TransactionRepositoryJpaTxHibernateImplTest {
 	public void getAllTransactions() {
 		// ARRANGE
 		Transaction transactionToGet1 = new Transaction();
-		Utilisateur initiateur1 = utilisateurRepositoryImplUnderTest.read("abc@test.com");
-		Utilisateur contrepartie1 = utilisateurRepositoryImplUnderTest.read("def@test.com");
+		Utilisateur initiateur1 = utilisateurRepositoryImp.read("abc@test.com");
+		Utilisateur contrepartie1 = utilisateurRepositoryImp.read("def@test.com");
 		transactionToGet1.setInitiateur(initiateur1);
 		transactionToGet1.setContrepartie(contrepartie1);
 		transactionToGet1.setMontant(1d);
@@ -208,7 +208,7 @@ public class TransactionRepositoryJpaTxHibernateImplTest {
 		transactionToGet2 = transactionRepositoryImplUnderTest.create(transactionToGet2);
 
 		Transaction transactionToGet3 = new Transaction();
-		Utilisateur contrepartie2 = utilisateurRepositoryImplUnderTest.read("ghi@test.com");
+		Utilisateur contrepartie2 = utilisateurRepositoryImp.read("ghi@test.com");
 		transactionToGet3.setInitiateur(initiateur1);
 		transactionToGet3.setContrepartie(contrepartie2);
 		transactionToGet3.setMontant(3d);

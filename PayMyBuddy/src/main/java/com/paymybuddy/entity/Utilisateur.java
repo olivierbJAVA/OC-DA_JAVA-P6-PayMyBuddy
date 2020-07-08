@@ -27,7 +27,7 @@ public class Utilisateur implements Serializable {
 
 	private Double solde;
 
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany//(fetch = FetchType.EAGER)
 	@JoinTable(name = "utilisateur_connection", joinColumns = @JoinColumn(name = "utilisateur_email"), inverseJoinColumns = @JoinColumn(name = "utilisateur_connection_email", nullable = true))
 	private Set<Utilisateur> connection;
 
