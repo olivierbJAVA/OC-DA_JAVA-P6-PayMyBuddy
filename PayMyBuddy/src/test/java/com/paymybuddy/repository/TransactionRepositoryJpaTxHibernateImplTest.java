@@ -44,7 +44,7 @@ public class TransactionRepositoryJpaTxHibernateImplTest {
 
 		// We get a resourceDatabasePopulator
 		resourceDatabasePopulator = new ResourceDatabasePopulator();
-		resourceDatabasePopulator.addScript(new ClassPathResource("/dataTransactionsForTests.sql"));
+		resourceDatabasePopulator.addScript(new ClassPathResource("/DataTransactionsForTests.sql"));
 	}
 
 	@BeforeEach

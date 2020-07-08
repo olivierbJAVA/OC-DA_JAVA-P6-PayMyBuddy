@@ -41,7 +41,7 @@ public class UtilisateurRepositoryJpaTxHibernateImplTest {
 
 		// We get a resourceDatabasePopulator
 		resourceDatabasePopulator = new ResourceDatabasePopulator();
-		resourceDatabasePopulator.addScript(new ClassPathResource("/cleanDBForTests.sql"));
+		resourceDatabasePopulator.addScript(new ClassPathResource("/CleanDBForTests.sql"));
 	}
 
 	@BeforeEach
