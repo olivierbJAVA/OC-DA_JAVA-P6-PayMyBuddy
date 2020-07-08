@@ -1,3 +1,6 @@
+/src/main/resources/paymybuddy.properties
+/src/test/resources/paymybuddyTest.properties
+/src/main/resources/META-INF/persistence.xml
 .classpath
 .project
 .settings
