@@ -42,7 +42,7 @@ public class TransactionTxHibernateService {
 	 * 
 	 * @return The financial transactions
 	 */
-	public List<Transaction> getAllTransactions(String utilisateurEmail) {
+	public List<Transaction> getTransactions(String utilisateurEmail) {
 
 		List<Transaction> transactions = new ArrayList<>();
 

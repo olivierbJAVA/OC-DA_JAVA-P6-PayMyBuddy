@@ -191,7 +191,7 @@ public class TransactionRepositoryJpaTxHibernateImplTest {
 	}
 
 	@Test
-	public void getAllTransactions() {
+	public void getTransactions() {
 		// ARRANGE
 		Transaction transactionToGet1 = new Transaction();
 		Utilisateur initiateur1 = utilisateurRepositoryImp.read("abc@test.com");
