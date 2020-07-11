@@ -88,45 +88,51 @@ public class TransactionTxHibernateService {
 		try {
 			repositoryTxManager.openCurrentSessionWithTx();
 
-			Utilisateur utilisateur = utilisateurRepository.read(initiateurEmail);
-			Utilisateur connection = utilisateurRepository.read(contrepartieEmail);
-
-			if (utilisateur == null) {
-				logger.error("Make a transaction : Utilisateur initiateur {} does not exist", initiateurEmail);
-			} else if (connection == null) {
-				logger.error("Make a transaction : Utilisateur contrepartie {} does not exist", contrepartieEmail);
+			if (initiateurEmail.equals(contrepartieEmail)) {
+				logger.error("Make a transaction : Utilisateur initiateur {} same as Utilisateur contrepatie {}",
+						initiateurEmail, contrepartieEmail);
 			} else {
+				Utilisateur utilisateur = utilisateurRepository.read(initiateurEmail);
+				Utilisateur connection = utilisateurRepository.read(contrepartieEmail);
 
-				Set<Utilisateur> utilisateurConnections = new HashSet<>();
-				utilisateurConnections = utilisateur.getConnection();
-
-				if (!utilisateurConnections.contains(connection)) {
-					logger.error("Make a transaction : Utilisateur {} not connected with {}", initiateurEmail,
-							contrepartieEmail);
-				} else if (utilisateur.getSolde() < montant) {
-					logger.error(
-							"Make a transaction : Utilisateur {} solde = {} not sufficient for transaction amount = {}",
-							initiateurEmail, utilisateur.getSolde(), montant);
+				if (utilisateur == null) {
+					logger.error("Make a transaction : Utilisateur initiateur {} does not exist", initiateurEmail);
+				} else if (connection == null) {
+					logger.error("Make a transaction : Utilisateur contrepartie {} does not exist", contrepartieEmail);
 				} else {
-					utilisateur.setSolde(utilisateur.getSolde() - montant);
-					connection.setSolde(connection.getSolde() + montant);
-					utilisateurRepository.update(utilisateur);
-					utilisateurRepository.update(connection);
 
-					Transaction transaction = new Transaction();
-					transaction.setInitiateur(utilisateur);
-					transaction.setContrepartie(connection);
-					transaction.setMontant(montant);
+					Set<Utilisateur> utilisateurConnections = new HashSet<>();
+					utilisateurConnections = utilisateur.getConnection();
 
-					transactionRepository.create(transaction);
+					if (!utilisateurConnections.contains(connection)) {
+						logger.error("Make a transaction : Utilisateur {} not connected with {}", initiateurEmail,
+								contrepartieEmail);
+					} else if (utilisateur.getSolde() < montant) {
+						logger.error(
+								"Make a transaction : Utilisateur {} solde = {} not sufficient for transaction amount = {}",
+								initiateurEmail, utilisateur.getSolde(), montant);
+					} else {
+						utilisateur.setSolde(utilisateur.getSolde() - montant);
+						// connection get the amount of the transaction minus the commission of 0.5%
+						connection.setSolde(connection.getSolde() + montant*(1-0.005));
+						utilisateurRepository.update(utilisateur);
+						utilisateurRepository.update(connection);
 
-					repositoryTxManager.commitTx();
+						Transaction transaction = new Transaction();
+						transaction.setInitiateur(utilisateur);
+						transaction.setContrepartie(connection);
+						transaction.setMontant(montant);
 
-					logger.info(
-							"Transaction made by Utilisateur intitiateur {} to Utilisateur contrepartie {} for amount = {} : done",
-							initiateurEmail, contrepartieEmail, montant);
+						transactionRepository.create(transaction);
 
-					transactionDone = true;
+						repositoryTxManager.commitTx();
+
+						logger.info(
+								"Transaction made by Utilisateur intitiateur {} to Utilisateur contrepartie {} for amount = {} : done",
+								initiateurEmail, contrepartieEmail, montant);
+
+						transactionDone = true;
+					}
 				}
 			}
 		} catch (Exception e) {
