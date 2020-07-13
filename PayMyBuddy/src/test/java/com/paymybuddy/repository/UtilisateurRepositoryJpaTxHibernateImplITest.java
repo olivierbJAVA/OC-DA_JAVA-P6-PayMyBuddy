@@ -21,9 +21,13 @@ import com.paymybuddy.entity.Utilisateur;
 import com.paymybuddy.factory.RepositoryFactory;
 import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
 
-public class UtilisateurRepositoryJpaTxHibernateImplTest {
+/**
+ * Class including integration (with the database) tests for the
+ * UtilisateurRepositoryJpaTxHibernateImpl Class.
+ */
+public class UtilisateurRepositoryJpaTxHibernateImplITest {
 
-	private static String hibernateConfigFile = "src/test/resources/hibernateTest.cfg.xml";
+	private static String paymybuddyPropertiesFile = "paymybuddyTest.properties";
 
 	private static RepositoryTxManagerHibernate repositoryTxManager;
 
@@ -36,12 +40,14 @@ public class UtilisateurRepositoryJpaTxHibernateImplTest {
 	@BeforeAll
 	private static void setUpAllTest() {
 		// We get a dataSource
-		dataSource = RepositoryDataSource.getDataSource("org.postgresql.Driver",
-				"jdbc:postgresql://localhost/PayMyBuddyTest", "postgres", "admin");
+		dataSource = RepositoryDataSource.getDataSource(paymybuddyPropertiesFile);
 
 		// We get a resourceDatabasePopulator
 		resourceDatabasePopulator = new ResourceDatabasePopulator();
 		resourceDatabasePopulator.addScript(new ClassPathResource("/CleanDBForTests.sql"));
+
+		// We close the dataSource
+		RepositoryDataSource.closeDatasource();
 	}
 
 	@BeforeEach
@@ -49,7 +55,7 @@ public class UtilisateurRepositoryJpaTxHibernateImplTest {
 		// We clear the database
 		DatabasePopulatorUtils.execute(resourceDatabasePopulator, dataSource);
 
-		repositoryTxManager = RepositoryTxManagerHibernate.getRepositoryTxManagerHibernate(hibernateConfigFile);
+		repositoryTxManager = RepositoryTxManagerHibernate.getRepositoryTxManagerHibernate(paymybuddyPropertiesFile);
 
 		utilisateurRepositoryImplUnderTest = RepositoryFactory.getUtilisateurRepository(repositoryTxManager);
 

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -22,9 +23,13 @@ import com.paymybuddy.entity.Utilisateur;
 import com.paymybuddy.factory.RepositoryFactory;
 import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
 
-public class TransactionRepositoryJpaTxHibernateImplTest {
+/**
+ * Class including integration tests (with the database) for the
+ * TransactionRepositoryJpaTxHibernateImpl Class.
+ */
+public class TransactionRepositoryJpaTxHibernateImplITest {
 
-	private static String hibernateConfigFile = "src/test/resources/hibernateTest.cfg.xml";
+	private static String paymybuddyPropertiesFile = "paymybuddyTest.properties";
 
 	private static RepositoryTxManagerHibernate repositoryTxManager;
 
@@ -35,16 +40,18 @@ public class TransactionRepositoryJpaTxHibernateImplTest {
 	private ITransactionRepository transactionRepositoryImplUnderTest;
 
 	private IUtilisateurRepository utilisateurRepositoryImp;
-
+	
 	@BeforeAll
 	private static void setUpAllTest() {
 		// We get a dataSource
-		dataSource = RepositoryDataSource.getDataSource("org.postgresql.Driver",
-				"jdbc:postgresql://localhost/PayMyBuddyTest", "postgres", "admin");
+		dataSource = RepositoryDataSource.getDataSource(paymybuddyPropertiesFile);
 
 		// We get a resourceDatabasePopulator
 		resourceDatabasePopulator = new ResourceDatabasePopulator();
 		resourceDatabasePopulator.addScript(new ClassPathResource("/DataTransactionsForTests.sql"));
+
+		// We close the dataSource
+		RepositoryDataSource.closeDatasource();
 	}
 
 	@BeforeEach
@@ -52,7 +59,7 @@ public class TransactionRepositoryJpaTxHibernateImplTest {
 		// We prepare the database
 		DatabasePopulatorUtils.execute(resourceDatabasePopulator, dataSource);
 
-		repositoryTxManager = RepositoryTxManagerHibernate.getRepositoryTxManagerHibernate(hibernateConfigFile);
+		repositoryTxManager = RepositoryTxManagerHibernate.getRepositoryTxManagerHibernate(paymybuddyPropertiesFile);
 
 		transactionRepositoryImplUnderTest = RepositoryFactory.getTransactionRepository(repositoryTxManager);
 
@@ -63,8 +70,9 @@ public class TransactionRepositoryJpaTxHibernateImplTest {
 
 	@AfterEach
 	private void afterPerTest() {
-		
+
 		repositoryTxManager.closeCurrentSession();
+
 	}
 
 	@Test
@@ -191,7 +199,7 @@ public class TransactionRepositoryJpaTxHibernateImplTest {
 	}
 
 	@Test
-	public void getTransactions() {
+	public void getAllTransactions() {
 		// ARRANGE
 		Transaction transactionToGet1 = new Transaction();
 		Utilisateur initiateur1 = utilisateurRepositoryImp.read("abc@test.com");
@@ -220,8 +228,48 @@ public class TransactionRepositoryJpaTxHibernateImplTest {
 		repositoryTxManager.commitTx();
 
 		// ASSERT
-		assertNotNull(transactionsGet);
 		assertEquals(3, transactionsGet.size());
-	}
 
+		Iterator<Transaction> iter = transactionsGet.iterator();
+
+		Transaction transactionGet1 = iter.next();
+		Transaction transactionGet2 = iter.next();
+		Transaction transactionGet3 = iter.next();
+		// TransactionGet3 = TransactionToGet1 as transactions are get with DESC order
+
+		assertEquals(transactionToGet1.getInitiateur().getEmail(), transactionGet3.getInitiateur().getEmail());
+		assertEquals(transactionToGet1.getInitiateur().getPassword(), transactionGet3.getInitiateur().getPassword());
+		assertEquals(transactionToGet1.getInitiateur().getSolde(), transactionGet3.getInitiateur().getSolde());
+
+		assertEquals(transactionToGet1.getContrepartie().getEmail(), transactionGet3.getContrepartie().getEmail());
+		assertEquals(transactionToGet1.getContrepartie().getPassword(),
+				transactionGet3.getContrepartie().getPassword());
+		assertEquals(transactionToGet1.getContrepartie().getSolde(), transactionGet3.getContrepartie().getSolde());
+
+		assertEquals(transactionToGet1.getMontant(), transactionGet3.getMontant());
+
+		// TransactionGet2 = TransactionToGet2 as transactions are get with DESC order
+		assertEquals(transactionToGet2.getInitiateur().getEmail(), transactionGet2.getInitiateur().getEmail());
+		assertEquals(transactionToGet2.getInitiateur().getPassword(), transactionGet2.getInitiateur().getPassword());
+		assertEquals(transactionToGet2.getInitiateur().getSolde(), transactionGet2.getInitiateur().getSolde());
+
+		assertEquals(transactionToGet2.getContrepartie().getEmail(), transactionGet2.getContrepartie().getEmail());
+		assertEquals(transactionToGet2.getContrepartie().getPassword(),
+				transactionGet2.getContrepartie().getPassword());
+		assertEquals(transactionToGet2.getContrepartie().getSolde(), transactionGet2.getContrepartie().getSolde());
+
+		assertEquals(transactionToGet2.getMontant(), transactionGet2.getMontant());
+
+		// TransactionGet1 = TransactionToGet3 as transactions are get with DESC order
+		assertEquals(transactionToGet3.getInitiateur().getEmail(), transactionGet1.getInitiateur().getEmail());
+		assertEquals(transactionToGet3.getInitiateur().getPassword(), transactionGet1.getInitiateur().getPassword());
+		assertEquals(transactionToGet3.getInitiateur().getSolde(), transactionGet1.getInitiateur().getSolde());
+
+		assertEquals(transactionToGet3.getContrepartie().getEmail(), transactionGet1.getContrepartie().getEmail());
+		assertEquals(transactionToGet3.getContrepartie().getPassword(),
+				transactionGet1.getContrepartie().getPassword());
+		assertEquals(transactionToGet3.getContrepartie().getSolde(), transactionGet1.getContrepartie().getSolde());
+
+		assertEquals(transactionToGet3.getMontant(), transactionGet1.getMontant());
+	}
 }
