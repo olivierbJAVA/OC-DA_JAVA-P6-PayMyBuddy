@@ -49,8 +49,11 @@ public class TransactionTxHibernateService {
 		try {
 			repositoryTxManager.openCurrentSessionWithTx();
 
+			// We check that the utilisateur for which we want to get the financial
+			// transactions is registered in the application
 			if (utilisateurRepository.read(utilisateurEmail) == null) {
 				logger.error("Get all transactions : Utilisateur {} does not exist", utilisateurEmail);
+
 			} else {
 				transactions = transactionRepository.getTransactions(utilisateurEmail);
 
@@ -85,39 +88,64 @@ public class TransactionTxHibernateService {
 
 		boolean transactionDone = false;
 
-		try {
-			repositoryTxManager.openCurrentSessionWithTx();
+		// We check that the initiateur and the contrepartie of the transaction are not
+		// the same
+		if (initiateurEmail.equals(contrepartieEmail)) {
+			logger.error("Make a transaction : Utilisateur initiateur {} same as Utilisateur contrepatie {}",
+					initiateurEmail, contrepartieEmail);
 
-			if (initiateurEmail.equals(contrepartieEmail)) {
-				logger.error("Make a transaction : Utilisateur initiateur {} same as Utilisateur contrepatie {}",
-						initiateurEmail, contrepartieEmail);
-			} else {
+		// We check that the transaction amount is positive
+		} else if (montant <= 0) {
+			logger.error("Make a transaction : Utilisateur {}, amount = {} must be positive", initiateurEmail, montant);
+
+		} else {
+
+			try {
+				repositoryTxManager.openCurrentSessionWithTx();
+
 				Utilisateur utilisateur = utilisateurRepository.read(initiateurEmail);
 				Utilisateur connection = utilisateurRepository.read(contrepartieEmail);
 
+				// We check that the initiateur of the transaction is registered in the
+				// application
 				if (utilisateur == null) {
 					logger.error("Make a transaction : Utilisateur initiateur {} does not exist", initiateurEmail);
+
+				// We check that the contrepartie of the transaction is registered in the
+				// application
 				} else if (connection == null) {
 					logger.error("Make a transaction : Utilisateur contrepartie {} does not exist", contrepartieEmail);
-				} else {
 
+				} else {
 					Set<Utilisateur> utilisateurConnections = new HashSet<>();
 					utilisateurConnections = utilisateur.getConnection();
 
-					if (!utilisateurConnections.contains(connection)) {
+					// We check that the initiateur of the transaction is connected to the
+					// contrepartie
+					if (utilisateurConnections == null || !utilisateurConnections.contains(connection)) {
 						logger.error("Make a transaction : Utilisateur {} not connected with {}", initiateurEmail,
 								contrepartieEmail);
+
+					// We check that the initiateur of the transaction has a sufficient solde
+					// compared to the amount of the transaction in order to perform the transaction
 					} else if (utilisateur.getSolde() < montant) {
 						logger.error(
 								"Make a transaction : Utilisateur {} solde = {} not sufficient for transaction amount = {}",
 								initiateurEmail, utilisateur.getSolde(), montant);
+
+					// If all is ok we perform the transaction :
 					} else {
+						// The solde of the initiateur is decreased from the amount of the transaction
 						utilisateur.setSolde(utilisateur.getSolde() - montant);
-						// connection get the amount of the transaction minus the commission of 0.5%
-						connection.setSolde(connection.getSolde() + montant*(1-0.005));
+
+						// The solde of the connection is increased by the amount of the transaction
+						// minus the commission of 0.5%
+						connection.setSolde(connection.getSolde() + montant * (1 - 0.005));
+
 						utilisateurRepository.update(utilisateur);
 						utilisateurRepository.update(connection);
 
+						// Finally we create the financial transaction in the database
 						Transaction transaction = new Transaction();
 						transaction.setInitiateur(utilisateur);
 						transaction.setContrepartie(connection);
@@ -128,20 +156,20 @@ public class TransactionTxHibernateService {
 						repositoryTxManager.commitTx();
 
 						logger.info(
-								"Transaction made by Utilisateur intitiateur {} to Utilisateur contrepartie {} for amount = {} : done",
+								"Transaction made by Utilisateur initiateur {} to Utilisateur contrepartie {} for amount = {} : done",
 								initiateurEmail, contrepartieEmail, montant);
 
 						transactionDone = true;
 					}
 				}
+			} catch (Exception e) {
+				logger.error("Make a transaction by Utilisateur intitateur {} : error", initiateurEmail);
+
+				repositoryTxManager.rollbackTx();
+			} finally {
+
+				repositoryTxManager.closeCurrentSession();
 			}
-		} catch (Exception e) {
-			logger.error("Make a transaction by Utilisateur intitateur {} : error", initiateurEmail);
-
-			repositoryTxManager.rollbackTx();
-		} finally {
-
-			repositoryTxManager.closeCurrentSession();
 		}
 
 		return transactionDone;
