@@ -57,7 +57,8 @@ INSERT INTO utilisateur
 VALUES 
 	('abc@test.com', 'abc', 123),
 	('def@test.com', 'def', 456),
-	('ghi@test.com', 'ghi', 789)
+	('ghi@test.com', 'ghi', 789),
+	('klm@test.com', 'klm', 100)
 ;
 
 INSERT INTO utilisateur_connection
