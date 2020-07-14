@@ -17,6 +17,7 @@ import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 import com.paymybuddy.configuration.RepositoryDataSource;
+import com.paymybuddy.configuration.RepositoryRessourceDatabasePopulator;
 import com.paymybuddy.entity.Utilisateur;
 import com.paymybuddy.factory.RepositoryFactory;
 import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
@@ -43,8 +44,7 @@ public class UtilisateurRepositoryJpaTxHibernateImplITest {
 		dataSource = RepositoryDataSource.getDataSource(paymybuddyPropertiesFile);
 
 		// We get a resourceDatabasePopulator
-		resourceDatabasePopulator = new ResourceDatabasePopulator();
-		resourceDatabasePopulator.addScript(new ClassPathResource("/CleanDBForTests.sql"));
+		resourceDatabasePopulator = RepositoryRessourceDatabasePopulator.getResourceDatabasePopulator("/CleanDBForTests.sql");
 
 		// We close the dataSource
 		RepositoryDataSource.closeDatasource();

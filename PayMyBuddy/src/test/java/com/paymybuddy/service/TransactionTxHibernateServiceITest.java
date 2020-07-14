@@ -17,6 +17,7 @@ import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 import com.paymybuddy.configuration.RepositoryDataSource;
+import com.paymybuddy.configuration.RepositoryRessourceDatabasePopulator;
 import com.paymybuddy.entity.Transaction;
 import com.paymybuddy.entity.Utilisateur;
 import com.paymybuddy.factory.RepositoryFactory;
@@ -52,9 +53,8 @@ public class TransactionTxHibernateServiceITest {
 		dataSource = RepositoryDataSource.getDataSource(paymybuddyPropertiesFile);
 
 		// We get a resourceDatabasePopulator
-		resourceDatabasePopulator = new ResourceDatabasePopulator();
-		resourceDatabasePopulator.addScript(new ClassPathResource("/DataTransactionsForTests.sql"));
-
+		resourceDatabasePopulator = RepositoryRessourceDatabasePopulator.getResourceDatabasePopulator("/DataTransactionsForTests.sql");
+		
 		// We close the dataSource
 		RepositoryDataSource.closeDatasource();
 	}
