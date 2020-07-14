@@ -55,24 +55,36 @@ INSERT INTO utilisateur
 	email, password, solde
 ) 
 VALUES 
-	('abc@test.com', 'abc', 123),
-	('def@test.com', 'def', 456),
-	('ghi@test.com', 'ghi', 789),
-	('klm@test.com', 'klm', 100)
+	('achristie@policier.com', 'ac', 1),
+	('jdcarr@policier.com', 'jdc', 2),
+	('phalter@policier.com', 'ph', 3),
+	
+	('jrrtolkien@fantasy.com', 'jrrt', 123),
+	('grrmartin@fantasy.com', 'grrm', 321),
+
+	('iasimov@sf.com', 'ia', 123456)
 ;
 
 INSERT INTO utilisateur_connection
  	(utilisateur_email, utilisateur_connection_email) 
 VALUES 
-	('abc@test.com', 'def@test.com'),
-	('abc@test.com', 'ghi@test.com'),
-	('def@test.com', 'ghi@test.com')
+	('achristie@policier.com', 'jdcarr@policier.com'),
+ 	('achristie@policier.com', 'phalter@policier.com'),
+	('jdcarr@policier.com', 'achristie@policier.com'),
+	('jdcarr@policier.com', 'phalter@policier.com'),
+	('phalter@policier.com', 'achristie@policier.com'),
+	('phalter@policier.com', 'jdcarr@policier.com'),
+
+	('jrrtolkien@fantasy.com', 'grrmartin@fantasy.com')
 ;
 
 INSERT INTO transaction
  	(initiateur_email, contrepartie_email, montant) 
 VALUES 
-	('def@test.com', 'ghi@test.com', 123)
+	('achristie@policier.com', 'phalter@policier.com',10),
+ 	('achristie@policier.com', 'jdcarr@policier.com',100),
+	('achristie@policier.com', 'jdcarr@policier.com',300),
+	('jrrtolkien@fantasy.com', 'grrmartin@fantasy.com', 123)
 ;
 
 COMMIT;
