@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -25,7 +25,6 @@ import com.paymybuddy.factory.ServiceFactory;
 import com.paymybuddy.repository.ITransactionRepository;
 import com.paymybuddy.repository.IUtilisateurRepository;
 import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
-import com.paymybuddy.service.TransactionTxHibernateService;
 
 /**
  * Class including integration tests for the TransactionTxHibernateService
@@ -53,8 +52,9 @@ public class TransactionTxHibernateServiceITest {
 		dataSource = RepositoryDataSource.getDataSource(paymybuddyPropertiesFile);
 
 		// We get a resourceDatabasePopulator
-		resourceDatabasePopulator = RepositoryRessourceDatabasePopulator.getResourceDatabasePopulator("/DataTransactionsForTests.sql");
-		
+		resourceDatabasePopulator = RepositoryRessourceDatabasePopulator
+				.getResourceDatabasePopulator("/DataTransactionsForTests.sql");
+
 		// We close the dataSource
 		RepositoryDataSource.closeDatasource();
 	}
@@ -72,6 +72,11 @@ public class TransactionTxHibernateServiceITest {
 
 		transactionTxHibernateServiceUnderTest = ServiceFactory.getTransactionService(repositoryTxManager,
 				utilisateurRepositoryImpl, transactionRepositoryImpl);
+	}
+
+	@AfterEach
+	private void afterPerTest() {
+		repositoryTxManager.closeSessionFactory();
 	}
 
 	@Test

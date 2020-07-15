@@ -7,10 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -22,7 +22,6 @@ import com.paymybuddy.factory.RepositoryFactory;
 import com.paymybuddy.factory.ServiceFactory;
 import com.paymybuddy.repository.IUtilisateurRepository;
 import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
-import com.paymybuddy.service.UtilisateurTxHibernateService;
 
 /**
  * Class including integration tests (with the database) for the
@@ -48,7 +47,8 @@ public class UtilisateurTxHibernateServiceITest {
 		dataSource = RepositoryDataSource.getDataSource(paymybuddyPropertiesFile);
 
 		// We get a resourceDatabasePopulator
-		resourceDatabasePopulator = RepositoryRessourceDatabasePopulator.getResourceDatabasePopulator("/CleanDBForTests.sql");
+		resourceDatabasePopulator = RepositoryRessourceDatabasePopulator
+				.getResourceDatabasePopulator("/CleanDBForTests.sql");
 
 		// We close the dataSource
 		RepositoryDataSource.closeDatasource();
@@ -65,6 +65,11 @@ public class UtilisateurTxHibernateServiceITest {
 
 		utilisateurTxHibernateServiceUnderTest = ServiceFactory.getUtilisateurService(repositoryTxManager,
 				utilisateurRepositoryImpl);
+	}
+
+	@AfterEach
+	private void afterPerTest() {
+		repositoryTxManager.closeSessionFactory();
 	}
 
 	@Test
@@ -214,7 +219,7 @@ public class UtilisateurTxHibernateServiceITest {
 		assertEquals((double) (utilisateurToWithdrawFromAccount.getSolde()),
 				(double) utilisateurWithdrawnFromAccount.getSolde());
 	}
-	
+
 	@Test
 	public void withdrawalFromAccount_whenUtilisateurExistAndSoldeNotSufficient() {
 		// ARRANGE
@@ -309,10 +314,9 @@ public class UtilisateurTxHibernateServiceITest {
 		Utilisateur utilisateurWiredToAccount = utilisateurRepositoryImpl.read(utilisateurToWireToAccount.getEmail());
 		repositoryTxManager.commitTxAndCloseCurrentSession();
 
-		assertEquals((double) (utilisateurToWireToAccount.getSolde()),
-				(double) utilisateurWiredToAccount.getSolde());
+		assertEquals((double) (utilisateurToWireToAccount.getSolde()), (double) utilisateurWiredToAccount.getSolde());
 	}
-	
+
 	@Test
 	public void wireToAccount_whenUtilisateurNotExist() {
 		// ARRANGE
