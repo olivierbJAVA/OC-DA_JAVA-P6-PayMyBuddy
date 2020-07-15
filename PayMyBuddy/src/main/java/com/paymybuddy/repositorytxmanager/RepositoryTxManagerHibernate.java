@@ -17,6 +17,8 @@ public class RepositoryTxManagerHibernate {
 
 	private static final Logger logger = LoggerFactory.getLogger(RepositoryTxManagerHibernate.class);
 
+	private SessionFactory sessionFactory;
+
 	private Session currentSession;
 
 	private Transaction currentTx;
@@ -49,7 +51,7 @@ public class RepositoryTxManagerHibernate {
 	}
 
 	/**
-	 * Create an instance of Hibernate SessionFactory.
+	 * Create an instance of Hibernate SessionFactory, if it does not already exist.
 	 * 
 	 * @param configurationFile The path of the paymybuddy properties file
 	 * 
@@ -57,27 +59,40 @@ public class RepositoryTxManagerHibernate {
 	 */
 	private SessionFactory getSessionFactory() {
 
-		Properties paymybuddyProperties = new Properties();
-		try {
-			paymybuddyProperties.load(ClassLoader.getSystemClassLoader().getResourceAsStream(paymybuddyPropertiesFile));
-		} catch (Exception e) {
-			logger.error("Error during load of paymybuddy properties file", e);
+		if (sessionFactory == null) {
+
+			Properties paymybuddyProperties = new Properties();
+			try {
+				paymybuddyProperties
+						.load(ClassLoader.getSystemClassLoader().getResourceAsStream(paymybuddyPropertiesFile));
+			} catch (Exception e) {
+				logger.error("Error during load of paymybuddy properties file", e);
+			}
+			// paymybuddyProperties.put(Environment.DRIVER, "org.postgresql.Driver");
+			paymybuddyProperties.put(Environment.SHOW_SQL, "true");
+			paymybuddyProperties.put(Environment.FORMAT_SQL, "true");
+			paymybuddyProperties.put(Environment.HBM2DDL_AUTO, "none");
+			paymybuddyProperties.put(Environment.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
+			paymybuddyProperties.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
+
+			Configuration configuration = new Configuration().setProperties(paymybuddyProperties);
+
+			sessionFactory = configuration.addAnnotatedClass(com.paymybuddy.entity.Transaction.class)
+					.addAnnotatedClass(com.paymybuddy.entity.Utilisateur.class).buildSessionFactory();
+
+			logger.info("Creation of Hibernate SessionFactory : OK");
 		}
-		// paymybuddyProperties.put(Environment.DRIVER, "org.postgresql.Driver");
-		paymybuddyProperties.put(Environment.SHOW_SQL, "true");
-		paymybuddyProperties.put(Environment.FORMAT_SQL, "true");
-		paymybuddyProperties.put(Environment.HBM2DDL_AUTO, "none");
-		paymybuddyProperties.put(Environment.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
-		paymybuddyProperties.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
-		paymybuddyProperties.put(Environment.C3P0_MAX_SIZE, "300");
-		paymybuddyProperties.put(Environment.POOL_SIZE, "300");
-
-		Configuration configuration = new Configuration().setProperties(paymybuddyProperties);
-
-		SessionFactory sessionFactory = configuration.addAnnotatedClass(com.paymybuddy.entity.Transaction.class)
-				.addAnnotatedClass(com.paymybuddy.entity.Utilisateur.class).buildSessionFactory();
 
 		return sessionFactory;
+	}
+
+	/**
+	 * Close Hibernate SessionFactory.
+	 */
+	public void closeSessionFactory() {
+		sessionFactory.close();
+		sessionFactory = null;
+		logger.info("Hibernate SessionFactory closed");
 	}
 
 	/**
@@ -85,15 +100,7 @@ public class RepositoryTxManagerHibernate {
 	 */
 	public Session openCurrentSession() {
 		currentSession = getSessionFactory().openSession();
-		return currentSession;
-	}
-
-	/**
-	 * Open a Hibernate Session with Tx.
-	 */
-	public Session openCurrentSessionWithTx() {
-		currentSession = getSessionFactory().openSession();
-		currentTx = currentSession.beginTransaction();
+		logger.info("Session opened");
 		return currentSession;
 	}
 
@@ -106,12 +113,22 @@ public class RepositoryTxManagerHibernate {
 	}
 
 	/**
+	 * Open a Hibernate Session with Tx.
+	 */
+	public Session openCurrentSessionWithTx() {
+		currentSession = getSessionFactory().openSession();
+		currentTx = currentSession.beginTransaction();
+		logger.info("Session with Tx opened");
+		return currentSession;
+	}
+
+	/**
 	 * Commit Tx and close current Session.
 	 */
 	public void commitTxAndCloseCurrentSession() {
 		currentTx.commit();
 		currentSession.close();
-		logger.info("Session with Tx closed");
+		logger.info("Tx committed and Session with Tx closed");
 	}
 
 	/**
@@ -120,6 +137,7 @@ public class RepositoryTxManagerHibernate {
 	public void rollbackTxAndCloseCurrentSession() {
 		currentTx.rollback();
 		currentSession.close();
+		logger.info("Tx rollbacked and Session with Tx closed");
 	}
 
 	/**
@@ -127,6 +145,7 @@ public class RepositoryTxManagerHibernate {
 	 */
 	public void commitTx() {
 		currentTx.commit();
+		logger.info("Tx committed");
 	}
 
 	/**
@@ -134,6 +153,7 @@ public class RepositoryTxManagerHibernate {
 	 */
 	public void rollbackTx() {
 		currentTx.rollback();
+		logger.info("Tx rollbacked");
 	}
 
 	public Session getCurrentSession() {
