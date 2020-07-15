@@ -12,7 +12,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -32,23 +31,24 @@ public class TransactionRepositoryJpaTxHibernateImplITest {
 
 	private static String paymybuddyPropertiesFile = "paymybuddyTest.properties";
 
-	private static RepositoryTxManagerHibernate repositoryTxManager;
-
 	private static ResourceDatabasePopulator resourceDatabasePopulator;
 
 	private static DriverManagerDataSource dataSource;
 
+	private RepositoryTxManagerHibernate repositoryTxManager;
+
 	private ITransactionRepository transactionRepositoryImplUnderTest;
 
 	private IUtilisateurRepository utilisateurRepositoryImp;
-	
+
 	@BeforeAll
 	private static void setUpAllTest() {
 		// We get a dataSource
 		dataSource = RepositoryDataSource.getDataSource(paymybuddyPropertiesFile);
 
 		// We get a resourceDatabasePopulator
-		resourceDatabasePopulator = RepositoryRessourceDatabasePopulator.getResourceDatabasePopulator("/DataTransactionsForTests.sql");
+		resourceDatabasePopulator = RepositoryRessourceDatabasePopulator
+				.getResourceDatabasePopulator("/DataTransactionsForTests.sql");
 
 		// We close the dataSource
 		RepositoryDataSource.closeDatasource();
@@ -70,9 +70,8 @@ public class TransactionRepositoryJpaTxHibernateImplITest {
 
 	@AfterEach
 	private void afterPerTest() {
-
 		repositoryTxManager.closeCurrentSession();
-
+		repositoryTxManager.closeSessionFactory();
 	}
 
 	@Test
