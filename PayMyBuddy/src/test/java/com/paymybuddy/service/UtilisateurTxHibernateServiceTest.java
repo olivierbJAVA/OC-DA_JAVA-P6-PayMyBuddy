@@ -3,6 +3,7 @@ package com.paymybuddy.service;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -30,9 +31,8 @@ import com.paymybuddy.service.UtilisateurTxHibernateService;
 @ExtendWith(MockitoExtension.class)
 public class UtilisateurTxHibernateServiceTest {
 
-	private static String paymybuddyPropertiesFile = "paymybuddyTest.properties";
-
-	private RepositoryTxManagerHibernate repositoryTxManager;
+	@Mock
+	private RepositoryTxManagerHibernate repositoryTxManagerMock;
 
 	@Mock
 	private IUtilisateurRepository utilisateurRepositoryMock;
@@ -42,9 +42,7 @@ public class UtilisateurTxHibernateServiceTest {
 	@BeforeEach
 	private void setUpPerTest() {
 
-		repositoryTxManager = RepositoryTxManagerHibernate.getRepositoryTxManagerHibernate(paymybuddyPropertiesFile);
-
-		utilisateurTxHibernateServiceUnderTest = ServiceFactory.getUtilisateurService(repositoryTxManager,
+		utilisateurTxHibernateServiceUnderTest = ServiceFactory.getUtilisateurService(repositoryTxManagerMock,
 				utilisateurRepositoryMock);
 	}
 
@@ -56,7 +54,11 @@ public class UtilisateurTxHibernateServiceTest {
 		utilisateurToRegister.setPassword("abc");
 		utilisateurToRegister.setSolde(0d);
 
+		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
+		
 		when(utilisateurRepositoryMock.read("abc@test.com")).thenReturn(null);
+		
+		doNothing().when(repositoryTxManagerMock).commitTx();
 
 		// ACT
 		boolean result = utilisateurTxHibernateServiceUnderTest.registerToApplication("abc@test.com", "abc");
@@ -74,6 +76,8 @@ public class UtilisateurTxHibernateServiceTest {
 		utilisateurToRegister.setPassword("abc");
 		utilisateurToRegister.setSolde(123d);
 
+		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
+		
 		when(utilisateurRepositoryMock.read("abc@test.com")).thenReturn(utilisateurToRegister);
 
 		// ACT
@@ -92,7 +96,11 @@ public class UtilisateurTxHibernateServiceTest {
 		utilisateurToConnect.setPassword("abc");
 		utilisateurToConnect.setSolde(123d);
 
+		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
+		
 		when(utilisateurRepositoryMock.read("abc@test.com")).thenReturn(utilisateurToConnect);
+
+		doNothing().when(repositoryTxManagerMock).commitTx();
 
 		// ACT
 		boolean result = utilisateurTxHibernateServiceUnderTest.connectToApplication("abc@test.com", "abc");
@@ -109,6 +117,8 @@ public class UtilisateurTxHibernateServiceTest {
 		utilisateurToConnect.setPassword("abc");
 		utilisateurToConnect.setSolde(123d);
 
+		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
+		
 		when(utilisateurRepositoryMock.read("abc@test.com")).thenReturn(utilisateurToConnect);
 
 		// ACT
@@ -121,6 +131,8 @@ public class UtilisateurTxHibernateServiceTest {
 	@Test
 	public void connectToApplication_whenUtilisateurNotExist() {
 		// ARRANGE
+		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
+	
 		when(utilisateurRepositoryMock.read("UtilisateurNotExist")).thenReturn(null);
 
 		// ACT
@@ -138,8 +150,12 @@ public class UtilisateurTxHibernateServiceTest {
 		utilisateurToWithdrawFromAccount.setPassword("abc");
 		utilisateurToWithdrawFromAccount.setSolde(123d);
 
+		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
+		
 		when(utilisateurRepositoryMock.read("abc@test.com")).thenReturn(utilisateurToWithdrawFromAccount);
 
+		doNothing().when(repositoryTxManagerMock).commitTx();
+		
 		// ACT
 		boolean result = utilisateurTxHibernateServiceUnderTest.withdrawalFromAccount("abc@test.com", 10d);
 
@@ -168,6 +184,8 @@ public class UtilisateurTxHibernateServiceTest {
 		utilisateurToWithdrawFromAccount.setPassword("abc");
 		utilisateurToWithdrawFromAccount.setSolde(1d);
 
+		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
+		
 		when(utilisateurRepositoryMock.read("abc@test.com")).thenReturn(utilisateurToWithdrawFromAccount);
 
 		// ACT
@@ -181,6 +199,8 @@ public class UtilisateurTxHibernateServiceTest {
 	@Test
 	public void withdrawalFromAccount_whenUtilisateurNotExist() {
 		// ARRANGE
+		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
+		
 		when(utilisateurRepositoryMock.read("abc@test.com")).thenReturn(null);
 
 		// ACT
@@ -199,8 +219,12 @@ public class UtilisateurTxHibernateServiceTest {
 		utilisateurToWireToAccount.setPassword("abc");
 		utilisateurToWireToAccount.setSolde(123d);
 
+		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
+		
 		when(utilisateurRepositoryMock.read("abc@test.com")).thenReturn(utilisateurToWireToAccount);
-
+	
+		doNothing().when(repositoryTxManagerMock).commitTx();
+		
 		// ACT
 		boolean result = utilisateurTxHibernateServiceUnderTest.wireToAccount("abc@test.com", 10d);
 
@@ -224,6 +248,8 @@ public class UtilisateurTxHibernateServiceTest {
 	@Test
 	public void wireToAccount_whenUtilisateurNotExist() {
 		// ARRANGE
+		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
+		
 		when(utilisateurRepositoryMock.read("abc@test.com")).thenReturn(null);
 
 		// ACT
@@ -247,6 +273,8 @@ public class UtilisateurTxHibernateServiceTest {
 		utilisateurNewConnection.setPassword("def");
 		utilisateurNewConnection.setSolde(0d);
 
+		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
+		
 		doReturn(utilisateurToAddConnection).when(utilisateurRepositoryMock).read("abc@test.com");
 
 		doReturn(utilisateurNewConnection).when(utilisateurRepositoryMock).read("def@test.com");
@@ -267,6 +295,8 @@ public class UtilisateurTxHibernateServiceTest {
 		utilisateurNewConnection.setPassword("def");
 		utilisateurNewConnection.setSolde(0d);
 
+		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
+		
 		doReturn(null).when(utilisateurRepositoryMock).read("abc@test.com");
 
 		doReturn(utilisateurNewConnection).when(utilisateurRepositoryMock).read("def@test.com");
@@ -287,6 +317,8 @@ public class UtilisateurTxHibernateServiceTest {
 		utilisateurToAddConnection.setPassword("abc");
 		utilisateurToAddConnection.setSolde(0d);
 
+		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
+		
 		doReturn(utilisateurToAddConnection).when(utilisateurRepositoryMock).read("abc@test.com");
 
 		doReturn(null).when(utilisateurRepositoryMock).read("def@test.com");
@@ -312,6 +344,8 @@ public class UtilisateurTxHibernateServiceTest {
 		utilisateurNewConnection.setPassword("def");
 		utilisateurNewConnection.setSolde(0d);
 
+		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
+				
 		doReturn(utilisateurToAddConnection).when(utilisateurRepositoryMock).read("abc@test.com");
 
 		doReturn(utilisateurNewConnection).when(utilisateurRepositoryMock).read("def@test.com");

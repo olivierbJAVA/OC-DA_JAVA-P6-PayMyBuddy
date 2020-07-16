@@ -40,9 +40,8 @@ import com.paymybuddy.service.TransactionTxHibernateService;
 @ExtendWith(MockitoExtension.class)
 public class TransactionTxHibernateServiceTest {
 
-	private static String paymybuddyPropertiesFile = "paymybuddyTest.properties";
-
-	private RepositoryTxManagerHibernate repositoryTxManager;
+	@Mock
+	private RepositoryTxManagerHibernate repositoryTxManagerMock;
 
 	@Mock
 	private IUtilisateurRepository utilisateurRepositoryMock;
@@ -59,7 +58,7 @@ public class TransactionTxHibernateServiceTest {
 	@BeforeEach
 	private void setUpPerTest() {
 
-		repositoryTxManager = RepositoryTxManagerHibernate.getRepositoryTxManagerHibernate(paymybuddyPropertiesFile);
+		//repositoryTxManager = RepositoryTxManagerHibernate.getRepositoryTxManagerHibernate(paymybuddyPropertiesFile);
 /*
 		//transactionTxHibernateServiceUnderTest = ServiceFactory.getTransactionService(repositoryTxManager,null, null);
 		
@@ -72,7 +71,7 @@ public class TransactionTxHibernateServiceTest {
 		reset(utilisateurRepositoryMock);
 		reset(transactionRepositoryMock);
 */		
-		transactionTxHibernateServiceUnderTest = ServiceFactory.getTransactionService(repositoryTxManager,
+		transactionTxHibernateServiceUnderTest = ServiceFactory.getTransactionService(repositoryTxManagerMock,
 				utilisateurRepositoryMock, transactionRepositoryMock);
 	}
 
@@ -121,6 +120,10 @@ public class TransactionTxHibernateServiceTest {
 
 		List<Transaction> transactionsGet = new ArrayList<>();
 
+		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
+		
+		doNothing().when(repositoryTxManagerMock).commitTx();
+				
 		// ACT
 		transactionsGet = transactionTxHibernateServiceUnderTest.getTransactions("abc@test.com");
 
@@ -177,8 +180,10 @@ public class TransactionTxHibernateServiceTest {
 		// ARRANGE
 		when(utilisateurRepositoryMock.read("UtilisateurNotExist")).thenReturn(null);
 
+		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
+		
 		List<Transaction> transactionsGet = new ArrayList<>();
-
+		
 		// ACT
 		transactionsGet = transactionTxHibernateServiceUnderTest.getTransactions("UtilisateurNotExist");
 
@@ -219,6 +224,10 @@ public class TransactionTxHibernateServiceTest {
 
 		when(transactionRepositoryMock.create(transaction)).thenReturn(transaction);
 
+		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
+		
+		doNothing().when(repositoryTxManagerMock).commitTx();
+		
 		// ACT
 		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction("abc@test.com",
 				"def@test.com", 10d);
@@ -273,6 +282,8 @@ public class TransactionTxHibernateServiceTest {
 
 		doReturn(contrepartie).when(utilisateurRepositoryMock).read("def@test.com");
 
+		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
+		
 		// ACT
 		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction("UtilisateurNotExist",
 				"def@test.com", 10d);
@@ -295,6 +306,8 @@ public class TransactionTxHibernateServiceTest {
 
 		doReturn(null).when(utilisateurRepositoryMock).read("ContrepartieNotExist");
 
+		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
+		
 		// ACT
 		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction("abc@test.com",
 				"ContrepartieNotExist", 10d);
@@ -326,6 +339,8 @@ public class TransactionTxHibernateServiceTest {
 		doReturn(initiateur).when(utilisateurRepositoryMock).read("abc@test.com");
 
 		doReturn(contrepartie).when(utilisateurRepositoryMock).read("def@test.com");
+		
+		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
 
 		// ACT
 		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction("abc@test.com",
@@ -363,6 +378,8 @@ public class TransactionTxHibernateServiceTest {
 
 		doReturn(contrepartie).when(utilisateurRepositoryMock).read("def@test.com");
 
+		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
+		
 		// ACT
 		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction("abc@test.com",
 				"def@test.com", 1000d);
