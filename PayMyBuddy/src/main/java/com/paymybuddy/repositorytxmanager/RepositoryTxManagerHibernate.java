@@ -75,6 +75,9 @@ public class RepositoryTxManagerHibernate {
 			paymybuddyProperties.put(Environment.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
 			paymybuddyProperties.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
 
+			paymybuddyProperties.put(Environment.C3P0_MIN_SIZE, "5");
+			paymybuddyProperties.put(Environment.C3P0_MAX_SIZE, "100");
+			
 			Configuration configuration = new Configuration().setProperties(paymybuddyProperties);
 
 			sessionFactory = configuration.addAnnotatedClass(com.paymybuddy.entity.Transaction.class)
