@@ -64,12 +64,16 @@ public class TransactionTxHibernateServiceITest {
 		// We prepare the database
 		DatabasePopulatorUtils.execute(resourceDatabasePopulator, dataSource);
 
+		RepositoryTxManagerHibernate.resetTxManager();
 		repositoryTxManager = RepositoryTxManagerHibernate.getRepositoryTxManagerHibernate(paymybuddyPropertiesFile);
 
+		RepositoryFactory.resetUtilisateurRepository();
 		utilisateurRepositoryImpl = RepositoryFactory.getUtilisateurRepository(repositoryTxManager);
 
+		RepositoryFactory.resetTransactionRepository();
 		transactionRepositoryImpl = RepositoryFactory.getTransactionRepository(repositoryTxManager);
 
+		ServiceFactory.resetTransactionService();
 		transactionTxHibernateServiceUnderTest = ServiceFactory.getTransactionService(repositoryTxManager,
 				utilisateurRepositoryImpl, transactionRepositoryImpl);
 	}

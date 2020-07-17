@@ -59,10 +59,13 @@ public class UtilisateurTxHibernateServiceITest {
 		// We clear the database
 		DatabasePopulatorUtils.execute(resourceDatabasePopulator, dataSource);
 
+		RepositoryTxManagerHibernate.resetTxManager();
 		repositoryTxManager = RepositoryTxManagerHibernate.getRepositoryTxManagerHibernate(paymybuddyPropertiesFile);
 
+		RepositoryFactory.resetUtilisateurRepository();
 		utilisateurRepositoryImpl = RepositoryFactory.getUtilisateurRepository(repositoryTxManager);
 
+		ServiceFactory.resetUtilisateurService();
 		utilisateurTxHibernateServiceUnderTest = ServiceFactory.getUtilisateurService(repositoryTxManager,
 				utilisateurRepositoryImpl);
 	}
