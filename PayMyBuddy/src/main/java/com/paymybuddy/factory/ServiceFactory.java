@@ -10,7 +10,7 @@ import com.paymybuddy.service.TransactionTxHibernateService;
 import com.paymybuddy.service.UtilisateurTxHibernateService;
 
 /**
- * Class Factory in charge of the construction of Utilisateur service and
+ * Class Factory in charge of construction and reset of Utilisateur service and
  * Transaction service.
  */
 public class ServiceFactory {
@@ -37,8 +37,8 @@ public class ServiceFactory {
 	public static TransactionTxHibernateService getTransactionService(RepositoryTxManagerHibernate repositoryTxManager,
 			IUtilisateurRepository utilisateurRepository, ITransactionRepository transactionRepository) {
 
-		//if (transactionService == null) {
-		if (true) {
+		if (transactionService == null) {
+
 			transactionService = new TransactionTxHibernateService(repositoryTxManager, utilisateurRepository,
 					transactionRepository);
 
@@ -46,6 +46,14 @@ public class ServiceFactory {
 		}
 
 		return transactionService;
+	}
+
+	/**
+	 * Reset the Transaction service.
+	 */
+	public static void resetTransactionService() {
+
+		transactionService = null;
 	}
 
 	/**
@@ -61,8 +69,8 @@ public class ServiceFactory {
 	public static UtilisateurTxHibernateService getUtilisateurService(RepositoryTxManagerHibernate repositoryTxManager,
 			IUtilisateurRepository utilisateurRepository) {
 
-		//if (utilisateurService == null) {
-		if (true) {
+		if (utilisateurService == null) {
+
 			utilisateurService = new UtilisateurTxHibernateService(repositoryTxManager, utilisateurRepository);
 
 			logger.info("Factory : Creation Utilisateur Service with Hibernate Tx management OK");
@@ -71,4 +79,11 @@ public class ServiceFactory {
 		return utilisateurService;
 	}
 
+	/**
+	 * Reset the Utilisateur service.
+	 */
+	public static void resetUtilisateurService() {
+
+		utilisateurService = null;
+	}
 }
