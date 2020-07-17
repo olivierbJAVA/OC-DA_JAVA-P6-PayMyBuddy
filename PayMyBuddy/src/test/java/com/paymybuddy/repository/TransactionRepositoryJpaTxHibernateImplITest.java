@@ -59,11 +59,14 @@ public class TransactionRepositoryJpaTxHibernateImplITest {
 		// We prepare the database
 		DatabasePopulatorUtils.execute(resourceDatabasePopulator, dataSource);
 
+		RepositoryTxManagerHibernate.resetTxManager();
 		repositoryTxManager = RepositoryTxManagerHibernate.getRepositoryTxManagerHibernate(paymybuddyPropertiesFile);
 
-		transactionRepositoryImplUnderTest = RepositoryFactory.getTransactionRepository(repositoryTxManager);
-
+		RepositoryFactory.resetUtilisateurRepository();
 		utilisateurRepositoryImp = RepositoryFactory.getUtilisateurRepository(repositoryTxManager);
+
+		RepositoryFactory.resetTransactionRepository();
+		transactionRepositoryImplUnderTest = RepositoryFactory.getTransactionRepository(repositoryTxManager);
 
 		repositoryTxManager.openCurrentSessionWithTx();
 	}

@@ -55,8 +55,10 @@ public class UtilisateurRepositoryJpaTxHibernateImplITest {
 		// We clear the database
 		DatabasePopulatorUtils.execute(resourceDatabasePopulator, dataSource);
 
+		RepositoryTxManagerHibernate.resetTxManager();
 		repositoryTxManager = RepositoryTxManagerHibernate.getRepositoryTxManagerHibernate(paymybuddyPropertiesFile);
 
+		RepositoryFactory.resetUtilisateurRepository();
 		utilisateurRepositoryImplUnderTest = RepositoryFactory.getUtilisateurRepository(repositoryTxManager);
 
 		repositoryTxManager.openCurrentSessionWithTx();
