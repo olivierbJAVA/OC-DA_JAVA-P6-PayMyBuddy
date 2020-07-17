@@ -10,8 +10,8 @@ import com.paymybuddy.repository.UtilisateurRepositoryJpaTxHibernateImpl;
 import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
 
 /**
- * Class Factory in charge of the construction of Utilisateur repository and
- * Transaction repository.
+ * Class Factory in charge of construction and reset of Utilisateur repository
+ * and Transaction repository.
  */
 public class RepositoryFactory {
 
@@ -42,6 +42,14 @@ public class RepositoryFactory {
 	}
 
 	/**
+	 * Reset the Transaction repository.
+	 */
+	public static void resetTransactionRepository() {
+
+		transactionRepository = null;
+	}
+
+	/**
 	 * Create a Utilisateur repository (JPA persistence and Tx managed by
 	 * Hibernate).
 	 * 
@@ -59,5 +67,13 @@ public class RepositoryFactory {
 		}
 
 		return utilisateurRepository;
+	}
+
+	/**
+	 * Reset the Utilisateur repository.
+	 */
+	public static void resetUtilisateurRepository() {
+
+		utilisateurRepository = null;
 	}
 }
