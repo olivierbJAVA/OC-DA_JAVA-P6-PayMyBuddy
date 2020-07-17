@@ -51,7 +51,6 @@ public class TransactionTxHibernateServiceTest {
 	@BeforeEach
 	private void setUpPerTest() {
 		ServiceFactory.resetTransactionService();
-
 		transactionTxHibernateServiceUnderTest = ServiceFactory.getTransactionService(repositoryTxManagerMock,
 				utilisateurRepositoryMock, transactionRepositoryMock);
 	}
