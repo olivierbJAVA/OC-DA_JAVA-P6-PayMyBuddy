@@ -8,7 +8,7 @@ GRANT ALL ON SCHEMA public TO public;
 CREATE TABLE utilisateur (
                 email VARCHAR(100) NOT NULL,
                 password VARCHAR(100) NOT NULL,
-                solde DECIMAL(13,2) NOT NULL DEFAULT 0,
+                solde DECIMAL(10,2) NOT NULL DEFAULT 0,
 		CONSTRAINT utilisateur_pk PRIMARY KEY (email)
 );
 
@@ -18,8 +18,8 @@ CREATE TABLE transaction (
                 id_transaction BIGINT NOT NULL DEFAULT nextval('transaction_id_seq'),
                 initiateur_email VARCHAR(100) NOT NULL,
                 contrepartie_email VARCHAR(100) NOT NULL,
-                montant DECIMAL(13,2) NOT NULL,
-		commentaire VARCHAR(255),		
+                montant DECIMAL(8,2) NOT NULL,
+		commentaire VARCHAR(200),		
 		CONSTRAINT transaction_pk PRIMARY KEY (id_transaction)
 );
 
