@@ -7,9 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,7 +30,6 @@ import com.paymybuddy.factory.ServiceFactory;
 import com.paymybuddy.repository.ITransactionRepository;
 import com.paymybuddy.repository.IUtilisateurRepository;
 import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
-import com.paymybuddy.service.TransactionTxHibernateService;
 
 /**
  * Class including unit tests for the TransactionTxHibernateService Class.
@@ -48,29 +45,13 @@ public class TransactionTxHibernateServiceTest {
 
 	@Mock
 	private ITransactionRepository transactionRepositoryMock;
-/*
-	private IUtilisateurRepository utilisateurRepositoryMock;
-	
-	private ITransactionRepository transactionRepositoryMock;
-*/
+
 	private TransactionTxHibernateService transactionTxHibernateServiceUnderTest;
-	
+
 	@BeforeEach
 	private void setUpPerTest() {
+		ServiceFactory.resetTransactionService();
 
-		//repositoryTxManager = RepositoryTxManagerHibernate.getRepositoryTxManagerHibernate(paymybuddyPropertiesFile);
-/*
-		//transactionTxHibernateServiceUnderTest = ServiceFactory.getTransactionService(repositoryTxManager,null, null);
-		
-		utilisateurRepositoryMock=null;
-		transactionRepositoryMock=null;
-		
-		utilisateurRepositoryMock = mock(IUtilisateurRepository.class);
-		transactionRepositoryMock = mock(ITransactionRepository.class);
-		
-		reset(utilisateurRepositoryMock);
-		reset(transactionRepositoryMock);
-*/		
 		transactionTxHibernateServiceUnderTest = ServiceFactory.getTransactionService(repositoryTxManagerMock,
 				utilisateurRepositoryMock, transactionRepositoryMock);
 	}
@@ -121,9 +102,9 @@ public class TransactionTxHibernateServiceTest {
 		List<Transaction> transactionsGet = new ArrayList<>();
 
 		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
-		
+
 		doNothing().when(repositoryTxManagerMock).commitTx();
-				
+
 		// ACT
 		transactionsGet = transactionTxHibernateServiceUnderTest.getTransactions("abc@test.com");
 
@@ -171,7 +152,7 @@ public class TransactionTxHibernateServiceTest {
 		assertEquals(transactionToGet3.getContrepartie().getSolde(), transactionGet1.getContrepartie().getSolde());
 
 		assertEquals(transactionToGet3.getMontant(), transactionGet1.getMontant());
-		
+
 		verify(transactionRepositoryMock, times(1)).getTransactions(initiateur.getEmail());
 	}
 
@@ -181,9 +162,9 @@ public class TransactionTxHibernateServiceTest {
 		when(utilisateurRepositoryMock.read("UtilisateurNotExist")).thenReturn(null);
 
 		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
-		
+
 		List<Transaction> transactionsGet = new ArrayList<>();
-		
+
 		// ACT
 		transactionsGet = transactionTxHibernateServiceUnderTest.getTransactions("UtilisateurNotExist");
 
@@ -225,12 +206,11 @@ public class TransactionTxHibernateServiceTest {
 		when(transactionRepositoryMock.create(transaction)).thenReturn(transaction);
 
 		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
-		
+
 		doNothing().when(repositoryTxManagerMock).commitTx();
-		
+
 		// ACT
-		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction("abc@test.com",
-				"def@test.com", 10d);
+		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction("abc@test.com", "def@test.com", 10d);
 
 		// ASSERT
 		assertTrue(result);
@@ -261,15 +241,14 @@ public class TransactionTxHibernateServiceTest {
 		transaction.setMontant(-10d);
 
 		// ACT
-		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction("abc@test.com",
-				"def@test.com", -10d);
+		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction("abc@test.com", "def@test.com", -10d);
 
 		// ASSERT
 		assertFalse(result);
 		verify(utilisateurRepositoryMock, never()).update(any(Utilisateur.class));
 		verify(transactionRepositoryMock, never()).create(any(Transaction.class));
 	}
-	
+
 	@Test
 	public void makeATransactionWhenInitiateurNotExist() {
 		// ARRANGE
@@ -283,17 +262,17 @@ public class TransactionTxHibernateServiceTest {
 		doReturn(contrepartie).when(utilisateurRepositoryMock).read("def@test.com");
 
 		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
-		
+
 		// ACT
-		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction("UtilisateurNotExist",
-				"def@test.com", 10d);
+		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction("UtilisateurNotExist", "def@test.com",
+				10d);
 
 		// ASSERT
 		assertFalse(result);
 		verify(utilisateurRepositoryMock, never()).update(any(Utilisateur.class));
 		verify(transactionRepositoryMock, never()).create(any(Transaction.class));
 	}
-	
+
 	@Test
 	public void makeATransactionWhenInitiateurExistAndContrepartieNotExist() {
 		// ARRANGE
@@ -307,10 +286,10 @@ public class TransactionTxHibernateServiceTest {
 		doReturn(null).when(utilisateurRepositoryMock).read("ContrepartieNotExist");
 
 		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
-		
+
 		// ACT
-		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction("abc@test.com",
-				"ContrepartieNotExist", 10d);
+		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction("abc@test.com", "ContrepartieNotExist",
+				10d);
 
 		// ASSERT
 		assertFalse(result);
@@ -339,12 +318,11 @@ public class TransactionTxHibernateServiceTest {
 		doReturn(initiateur).when(utilisateurRepositoryMock).read("abc@test.com");
 
 		doReturn(contrepartie).when(utilisateurRepositoryMock).read("def@test.com");
-		
+
 		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
 
 		// ACT
-		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction("abc@test.com",
-				"def@test.com", 10d);
+		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction("abc@test.com", "def@test.com", 10d);
 
 		// ASSERT
 		assertFalse(result);
@@ -379,10 +357,9 @@ public class TransactionTxHibernateServiceTest {
 		doReturn(contrepartie).when(utilisateurRepositoryMock).read("def@test.com");
 
 		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
-		
+
 		// ACT
-		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction("abc@test.com",
-				"def@test.com", 1000d);
+		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction("abc@test.com", "def@test.com", 1000d);
 
 		// ASSERT
 		assertFalse(result);

@@ -41,7 +41,8 @@ public class UtilisateurTxHibernateServiceTest {
 
 	@BeforeEach
 	private void setUpPerTest() {
-
+		ServiceFactory.resetUtilisateurService();
+		
 		utilisateurTxHibernateServiceUnderTest = ServiceFactory.getUtilisateurService(repositoryTxManagerMock,
 				utilisateurRepositoryMock);
 	}
