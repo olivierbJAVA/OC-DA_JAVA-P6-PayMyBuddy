@@ -24,13 +24,13 @@ You need to install the following software :
 
 A step by step explanation that tell you how to get a development environment running:
 
-1.Install Java:
+1. Install Java:
 <https://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html>
 
-2.Install Maven:
+2. Install Maven:
 <https://maven.apache.org/install.html>
 
-3.Install PostgreSQL :
+3. Install PostgreSQL :
 <https://www.postgresqltutorial.com/install-postgresql>
 
 
@@ -41,17 +41,17 @@ This develop branch is ready to be reviewed.
 
 You also have the following features branches with the following features :
 
-**feature_repositoryJDBC : **
+feature_repositoryJDBC :
 - this branch contains the model (entities) and the repository layer (DAO) 
 - the data persistence is done using the JDBC API 
 - the Repository Pattern is implemented (there is an Interface implemented by a concrete class and a factory to build the repository)
 
-**feature_repositoryJPA : **
+feature_repositoryJPA :
 - this branch contains the model and the repository layer
 - the data persistence is done using the JPA API 
 - the Repository Pattern is implemented
 
-**feature_repositoryJDBCandJPA : **
+feature_repositoryJDBCandJPA :
 - this branch contains the model and the repository layer
 - the branch regroup the JDBC and JPA persistence
 - the Repository Interface is implemented by both JDBC and JPA persistence concrete class 
@@ -59,7 +59,7 @@ You also have the following features branches with the following features :
 
 > -> This branch is a demonstration of the Repository Pattern : a same interface is implemented by two different persistence versions and a factory allows to choose the implementation used
 
-**feature_RepositoryJPAndServiceTxHibernate : **
+feature_RepositoryJPAndServiceTxHibernate :
 - this branch contains the model, the repository layer and the service layer
 - the persistence of data implements the JPA API
 - the transactions are managed using the Hibernate Transaction API 
@@ -70,7 +70,7 @@ You can import these branches in your favorite IDE.
 
 ### Configuration
 
-**1 - Configuration file : **
+1 - Configuration file :
 - Within the **develop** branch, a configuration file called *'paymybuddy.properties'* is used to configure the application.
 The goal of this configuration file is mainly to avoid to have these elements hard coded in the Java code. This feature enhances the security of the application.
 
@@ -86,7 +86,7 @@ The first two elements are already filled-in in the file, please ensure to fill-
 
 (Please note that for sake of simplicity, configuration files for other branches are already filled-in)
 
-**2 - Database creation and initialization : **
+2 - Database creation and initialization :
 - First you need to create a database called : *PayMyBuddyProd*
 - Then you need to launch the SQL file called *DatabaseInitialization.sql* 
 	-> This file is used to create the tables and populate some first elements.
