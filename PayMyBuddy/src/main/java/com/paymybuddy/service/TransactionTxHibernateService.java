@@ -1,7 +1,6 @@
 package com.paymybuddy.service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -117,8 +116,7 @@ public class TransactionTxHibernateService {
 					logger.error("Make a transaction : Utilisateur contrepartie {} does not exist", contrepartieEmail);
 
 				} else {
-					Set<Utilisateur> utilisateurConnections = new HashSet<>();
-					utilisateurConnections = utilisateur.getConnection();
+					Set<Utilisateur> utilisateurConnections = utilisateur.getConnection();
 
 					// We check that the initiateur of the transaction is connected to the
 					// contrepartie
