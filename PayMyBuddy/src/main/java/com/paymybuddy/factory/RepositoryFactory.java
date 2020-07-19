@@ -21,6 +21,9 @@ public class RepositoryFactory {
 
 	private static IUtilisateurRepository utilisateurRepository = null;
 
+	private RepositoryFactory() {
+	}
+	
 	/**
 	 * Create a Transaction repository (JPA persistence and Tx managed by
 	 * Hibernate).
@@ -47,6 +50,9 @@ public class RepositoryFactory {
 	public static void resetTransactionRepository() {
 
 		transactionRepository = null;
+		
+		logger.info("Factory : Reset JPA persistence Transaction Repository with Hibernate Tx management : OK");
+
 	}
 
 	/**
@@ -75,5 +81,8 @@ public class RepositoryFactory {
 	public static void resetUtilisateurRepository() {
 
 		utilisateurRepository = null;
+		
+		logger.info("Factory : Reset JPA persistence Utilisateur Repository with Hibernate Tx management : OK");
+
 	}
 }

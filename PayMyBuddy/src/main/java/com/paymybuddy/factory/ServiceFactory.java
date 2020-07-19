@@ -21,6 +21,9 @@ public class ServiceFactory {
 
 	private static UtilisateurTxHibernateService utilisateurService = null;
 
+	private ServiceFactory() {
+	}
+	
 	/**
 	 * Create a Transaction service.
 	 * 
@@ -54,6 +57,9 @@ public class ServiceFactory {
 	public static void resetTransactionService() {
 
 		transactionService = null;
+		
+		logger.info("Factory : Reset Transaction Service with Hibernate Tx management OK");
+
 	}
 
 	/**
@@ -85,5 +91,8 @@ public class ServiceFactory {
 	public static void resetUtilisateurService() {
 
 		utilisateurService = null;
+		
+		logger.info("Factory : Reset Utilisateur Service with Hibernate Tx management OK");
+		
 	}
 }
