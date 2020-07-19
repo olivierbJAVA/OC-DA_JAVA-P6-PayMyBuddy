@@ -93,7 +93,9 @@ public class RepositoryTxManagerHibernate {
 	 * Close Hibernate SessionFactory.
 	 */
 	public void closeSessionFactory() {
-		sessionFactory.close();
+		if(sessionFactory!=null) {
+			sessionFactory.close();
+		}
 		sessionFactory = null;
 		logger.info("Hibernate SessionFactory closed");
 	}
