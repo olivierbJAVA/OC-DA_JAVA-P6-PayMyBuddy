@@ -57,7 +57,7 @@ feature_repositoryJDBCandJPA :
 - the Repository Interface is implemented by both JDBC and JPA persistence concrete class 
 - a parameterized factory enables to choose the data persistence
 
-> -> This branch is a demonstration of the Repository Pattern : a same interface is implemented by two different persistence versions and a factory allows to choose the implementation used
+> This branch is a demonstration of the Repository Pattern : a same interface is implemented by two different persistence versions and a factory allows to choose the implementation used
 
 feature_RepositoryJPAndServiceTxHibernate :
 - this branch contains the model, the repository layer and the service layer
@@ -84,12 +84,13 @@ This configuration file contains the following elements :
  
 The first two elements are already filled-in in the file, please ensure to fill-in yourself username and password corresponding to your configuration.
 
-(Please note that for sake of simplicity, configuration files for other branches are already filled-in)
+> Please note that for sake of simplicity, configuration files for other branches are already filled-in
 
 2 - Database creation and initialization :
 - First you need to create a database called : *PayMyBuddyProd*
 - Then you need to launch the SQL file called *DatabaseInitialization.sql* 
-	-> This file is used to create the tables and populate some first elements.
+
+> This file is used to create the tables and populate some first elements.
 
 
 ### Features
