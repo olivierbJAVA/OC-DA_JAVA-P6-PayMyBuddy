@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Set;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -27,7 +26,7 @@ public class Utilisateur implements Serializable {
 
 	private Double solde;
 
-	@ManyToMany//(fetch = FetchType.EAGER)
+	@ManyToMany
 	@JoinTable(name = "utilisateur_connection", joinColumns = @JoinColumn(name = "utilisateur_email"), inverseJoinColumns = @JoinColumn(name = "utilisateur_connection_email", nullable = true))
 	private Set<Utilisateur> connection;
 
@@ -117,11 +116,4 @@ public class Utilisateur implements Serializable {
 			return false;
 		return true;
 	}
-
-	@Override
-	public String toString() {
-		return "Utilisateur [email=" + email + ", password=" + password + ", solde=" + solde + ", connection="
-				+ connection + "]";
-	}
-
 }

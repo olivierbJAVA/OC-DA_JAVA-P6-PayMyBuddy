@@ -134,11 +134,4 @@ public class Transaction implements Serializable {
 			return false;
 		return true;
 	}
-
-	@Override
-	public String toString() {
-		return "Transaction [idTransaction=" + idTransaction + ", initiateur=" + initiateur + ", contrepartie="
-				+ contrepartie + ", montant=" + montant + ", commentaire=" + commentaire + "]";
-	}
-
 }
