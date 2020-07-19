@@ -164,6 +164,7 @@ public class RepositoryTxManagerHibernate {
 	 */
 	public static void resetTxManager() {
 		repositoryTxManagerHibernate = null;
+		logger.info("Tx Manager reseted");
 	}
 
 	public Session getCurrentSession() {
