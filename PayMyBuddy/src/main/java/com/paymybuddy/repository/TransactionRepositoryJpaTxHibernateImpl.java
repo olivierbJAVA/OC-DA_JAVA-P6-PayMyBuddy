@@ -1,12 +1,8 @@
 package com.paymybuddy.repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.TypedQuery;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.paymybuddy.entity.Transaction;
 import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
@@ -16,8 +12,6 @@ import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
  * implementation for persistence and Hibernate for Tx management.
  */
 public class TransactionRepositoryJpaTxHibernateImpl implements ITransactionRepository {
-
-	private static final Logger logger = LoggerFactory.getLogger(TransactionRepositoryJpaTxHibernateImpl.class);
 
 	private RepositoryTxManagerHibernate repositoryTxManager = null;
 
@@ -36,11 +30,8 @@ public class TransactionRepositoryJpaTxHibernateImpl implements ITransactionRepo
 	public Transaction create(Transaction transactionToInsert) {
 
 		repositoryTxManager.getCurrentSession().persist(transactionToInsert);
-		
-		Transaction transactionCreated = repositoryTxManager.getCurrentSession().find(Transaction.class,
-				transactionToInsert.getIdTransaction());
 
-		return transactionCreated;
+		return repositoryTxManager.getCurrentSession().find(Transaction.class, transactionToInsert.getIdTransaction());
 	}
 
 	/**
@@ -64,9 +55,7 @@ public class TransactionRepositoryJpaTxHibernateImpl implements ITransactionRepo
 	@Override
 	public Transaction read(long idTransaction) {
 
-		Transaction transactionRead = repositoryTxManager.getCurrentSession().find(Transaction.class, idTransaction);
-		
-		return transactionRead;
+		return repositoryTxManager.getCurrentSession().find(Transaction.class, idTransaction);
 	}
 
 	/**
@@ -76,9 +65,10 @@ public class TransactionRepositoryJpaTxHibernateImpl implements ITransactionRepo
 	 */
 	@Override
 	public void delete(long idTransaction) {
-		
-		Transaction transactionToDelete = repositoryTxManager.getCurrentSession().find(Transaction.class, idTransaction);
-		
+
+		Transaction transactionToDelete = repositoryTxManager.getCurrentSession().find(Transaction.class,
+				idTransaction);
+
 		repositoryTxManager.getCurrentSession().remove(transactionToDelete);
 	}
 
@@ -92,12 +82,10 @@ public class TransactionRepositoryJpaTxHibernateImpl implements ITransactionRepo
 	@Override
 	public List<Transaction> getTransactions(String emailUtilisateur) {
 		String REQUEST_TRANSACTIONS = "SELECT t FROM Transaction t WHERE t.initiateur.email IN ( SELECT email FROM Utilisateur WHERE email = :email ) ORDER by t.id DESC";
-		List<Transaction> transactions = new ArrayList<>();
 
 		TypedQuery<Transaction> query = repositoryTxManager.getCurrentSession().createQuery(REQUEST_TRANSACTIONS,
 				Transaction.class);
-		transactions = query.setParameter("email", emailUtilisateur).getResultList();
 
-		return transactions;
+		return query.setParameter("email", emailUtilisateur).getResultList();
 	}
 }

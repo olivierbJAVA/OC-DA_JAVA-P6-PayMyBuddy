@@ -1,8 +1,5 @@
 package com.paymybuddy.repository;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.paymybuddy.entity.Utilisateur;
 import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
 
@@ -11,8 +8,6 @@ import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
  * persistence and Hibernate for Tx management.
  */
 public class UtilisateurRepositoryJpaTxHibernateImpl implements IUtilisateurRepository {
-
-	private static final Logger logger = LoggerFactory.getLogger(UtilisateurRepositoryJpaTxHibernateImpl.class);
 
 	private RepositoryTxManagerHibernate repositoryTxManager = null;
 
@@ -27,7 +22,7 @@ public class UtilisateurRepositoryJpaTxHibernateImpl implements IUtilisateurRepo
 	 */
 	@Override
 	public void create(Utilisateur utilisateur) {
-		
+
 		repositoryTxManager.getCurrentSession().persist(utilisateur);
 	}
 
@@ -52,9 +47,7 @@ public class UtilisateurRepositoryJpaTxHibernateImpl implements IUtilisateurRepo
 	@Override
 	public Utilisateur read(String email) {
 
-		Utilisateur utilisateur = repositoryTxManager.getCurrentSession().find(Utilisateur.class, email);
-	
-		return utilisateur;
+		return repositoryTxManager.getCurrentSession().find(Utilisateur.class, email);
 	}
 
 	/**
