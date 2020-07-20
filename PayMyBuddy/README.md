@@ -3,6 +3,8 @@ Welcome to PayMyBuddy Application !
 
 PayMyBuddy is a web financial application which goal is to allow user to perform financial transactions : wire and withdraw amount to and from an external account and perform transaction to connections that are users of the application as well.
 
+You will find in this repository the Data Access Layer for the application, including repository and service layers, as well as the database initialization file.
+
 The code is written in Java and use Maven for project build, dependencies management and tests running. A PostgreSQL database is used to store the data.
 
 
@@ -36,7 +38,7 @@ A step by step explanation that tell you how to get a development environment ru
 
 ### Branches
 
-The most up to date branch is the develop branch.
+The most up to date branch is the **develop** branch.
 This develop branch is ready to be reviewed.
 
 You also have the following features branches with the following features :
@@ -65,6 +67,8 @@ feature_RepositoryJPAndServiceTxHibernate :
 - the transactions are managed using the Hibernate Transaction API 
 - factories are used to build objects
 	
+> The develop branch is similar to this one
+	
 You can import these branches in your favorite IDE.
 
 
@@ -72,7 +76,8 @@ You can import these branches in your favorite IDE.
 
 1 - Configuration file :
 - Within the **develop** branch, a configuration file called *'paymybuddy.properties'* is used to configure the application.
-The goal of this configuration file is mainly to avoid to have these elements hard coded in the Java code. This feature enhances the security of the application.
+
+> The goal of this configuration file is mainly to avoid to have these elements hard coded in the Java code. This feature enhances the security of the application.
 
 This configuration file contains the following elements :
 - **hibernate.connection.url** : the url of the database
@@ -82,13 +87,16 @@ This configuration file contains the following elements :
 - **hibernate.connection.username** : the username for the connection to the database
 - **hibernate.connection.password** : the password corresponding to the username provided
  
-The first two elements are already filled-in in the file, please ensure to fill-in yourself username and password corresponding to your configuration.
+> The first two elements are already filled-in in the file, please ensure to fill-in yourself username and password corresponding to your configuration.
 
-> Please note that for sake of simplicity, configuration files for other branches are already filled-in
+
+- With respect to other **feature** branches : for **JDBC** you need to update the *paymybuddy.properties* configuration file and for **JPA** you need to update the *persistence.xml* configuration file.
+
 
 2 - Database creation and initialization :
 - First you need to create a database called : *PayMyBuddyProd*
-- Then you need to launch the SQL file called *DatabaseInitialization.sql* 
+- Then you need to grant the rights to this database to the user configured in the previous section 
+- Finally  you need to launch the SQL file called *DatabaseInitialization.sql* 
 
 > This file is used to create the tables and populate some first elements.
 
@@ -128,7 +136,9 @@ Unit and/or Integration tests are included in each branch.
 
 You can run them using JUnit runner (`Run as JUnit test`) or using Maven (`Run as Maven test`).
 
-Before launching the tests, you need to create a database called : *PayMyBuddyTest* and to fill-in the *paymybuddyTest.properties*.
+Before launching the tests, you need to create a database called : *PayMyBuddyTest* and to fill-in the *paymybuddyTest.properties* accordingly.
 
-There are dedicated SQL files for database initialization and preparation : *CleanDBForTests.sql* and *CleanDBForTests.sql*. These file are automatically launched before tests so you have nothing to do on your side.
+There are dedicated SQL files for database initialization and preparation : *CleanDBForTests.sql* and *CleanDBForTests.sql*. In the **develop** branch, these file are automatically launched before tests so you have nothing to do on your side.
 
+For the **JDBC and JPA feature** branches, you have to update the data, in the method called 
+**setUpAllTest()**, in order for tests to be able to launch these files.
