@@ -1,10 +1,5 @@
 BEGIN TRANSACTION;
 
-DROP SCHEMA public CASCADE;
-CREATE SCHEMA public;
-GRANT ALL ON SCHEMA public TO postgres;
-GRANT ALL ON SCHEMA public TO public;
-
 CREATE TABLE utilisateur (
                 email VARCHAR(100) NOT NULL,
                 password VARCHAR(100) NOT NULL,
