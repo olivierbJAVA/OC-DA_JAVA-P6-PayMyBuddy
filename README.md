@@ -1,7 +1,7 @@
 # PayMyBuddy
 Welcome to PayMyBuddy Application !
 
-PayMyBuddy is a web financial application which goal is to allow user to perform financial transactions : wire and withdraw amount to and from an external account and perform transaction to connections that are users of the application as well.
+PayMyBuddy is a web financial application which goal is to allow users to perform financial transactions : wire and withdraw amount to and from an external account and perform transactions to connections that are users of the application as well.
 
 You will find in this repository the Data Access Layer for the application, including repository and service layers, as well as the database initialization file.
 
@@ -45,18 +45,18 @@ You also have the following **features** branches including the described featur
 
 feature_repositoryJDBC :
 - this branch contains the model (entities) and the repository layer (DAO) 
-- the data persistence is done using the JDBC API 
-- the Repository Pattern is implemented (there is an Interface implemented by a concrete class and a factory to build the repository)
+- the data persistence is done using the **JDBC API** 
+- the Repository Pattern is implemented (there is an Interface implemented by a concrete class and a factory to build the repository objects)
 
 feature_repositoryJPA :
 - this branch contains the model and the repository layer
-- the data persistence is done using the JPA API 
+- the data persistence is done using the **JPA API** 
 - the Repository Pattern is implemented
 
 feature_repositoryJDBCandJPA :
 - this branch contains the model and the repository layer
 - the branch regroup the JDBC and JPA persistence
-- the Repository Interface is implemented by both JDBC and JPA persistence concrete class 
+- the Repository Interface is implemented by both **JDBC and JPA** persistence concrete class 
 - a parameterized factory enables to choose the data persistence
 
 > This branch is a demonstration of the Repository Pattern : a same interface is implemented by two different persistence versions and a factory allows to choose the implementation used.
@@ -65,7 +65,7 @@ feature_RepositoryJPAndServiceTxHibernate :
 - this branch contains the model, the repository layer and the service layer
 - the persistence of data implements the JPA API
 - the transactions are managed using the Hibernate Transaction API 
-- factories are used to build objects
+- factories are used to build repository and service objects
 	
 > The develop branch is similar to this one.
 	
@@ -81,9 +81,8 @@ You can import these branches in your favorite IDE.
 
 This configuration file contains the following elements :
 - **hibernate.connection.url** : the url of the database
-	-> example : *jdbc:postgresql://localhost/PayMyBuddyProd*
-- **hibernate.connection.driver_class** : the name of the driver used to access to the database from the Java code
-	-> example : *org.postgresql.Driver*
+	= *jdbc:postgresql://localhost/PayMyBuddyProd* by default
+- **hibernate.connection.driver_class** : the name of the driver used to access to the database from the Java code = *org.postgresql.Driver* by default
 - **hibernate.connection.username** : the username for the connection to the database
 - **hibernate.connection.password** : the password corresponding to the username provided
  
@@ -96,7 +95,7 @@ This configuration file contains the following elements :
 2 - Database creation and initialization :
 - First you need to create a database called : *PayMyBuddyProd*
 - Then you need to grant the rights to this database to the user configured in the previous section 
-- Finally  you need to launch the SQL file called *'DatabaseInitialization.sql'* 
+- Finally  you need to launch the SQL file called *'DatabaseInitialization.sql'*
 
 > This file is used to create the tables and populate some first elements.
 
@@ -108,11 +107,11 @@ On the **'user'** side :
 - a user can register to the application by providing an email not already existing and a password
 - a user can connect to the application by providing an existing email and the corresponding password
 - a user can wire amount from an external account to its PayMyBuddy account, provided that the wired amount is positive
-- a user can withdraw amount from its PayMyBuddy account to an external account, provided that the withdrawal amount is positive and the user balance is enough
+- a user can withdraw amount from its PayMyBuddy account to an external account, provided that the withdrawal amount is positive and the user balance is sufficient
 - a user can add another user to its connections, provided that the connection is registered to the application and that they are not already connected
 
 On the **'transaction'** side :
-- a user can make a transaction to one of its connection, provided that they are connected, the amount of the transaction is positive and the user has a sufficient sold
+- a user can make a transaction to one of its connection, provided that they are connected, the amount of the transaction is positive and the user balance is sufficient
 - we can get all transactions for an user in order to display them  
 
 
@@ -138,7 +137,7 @@ You can run them using JUnit runner (`Run as JUnit test`) or using Maven (`Run a
 
 Before launching the tests, you need to create a database called : *PayMyBuddyTest* and to fill-in the *'paymybuddyTest.properties'* accordingly.
 
-There are dedicated SQL files for database initialization and preparation : *'CleanDBForTests.sql'* and *'DataTransactionsForTests.sql'*. In the **develop** branch, these file are automatically launched before tests so you have nothing to do on your side.
+There are dedicated SQL files for database initialization and preparation : *'CleanDBForTests.sql'* and *'DataTransactionsForTests.sql'*. In the **develop** branch, these files are automatically launched before tests so you have nothing to do on your side.
 
 For the **JDBC** and **JPA feature** branches, you have to update the database connection data, in the method called 
 *setUpAllTest()*, in order for tests to be able to launch these files.
