@@ -71,6 +71,7 @@ feature_RepositoryJPAndServiceTxHibernate :
 	
 You can import these branches in your favorite IDE.
 
+> **WARNING** :If you are using Eclipse, you may have errors in the code due to the fact that the Java version is not correctly configured. To correct this issue, please right click on the project name and go to : *Properties/JavaCompiler* and ensure that the JDK/JRE version used is the **1.8**
 
 ### Configuration
 
@@ -135,9 +136,12 @@ Unit and/or Integration tests are included in each branch.
 
 You can run them using JUnit runner (`Run as JUnit test`) or using Maven (`Run as Maven test`).
 
-Before launching the tests, you need to create a database called : *PayMyBuddyTest* and to fill-in the *'paymybuddyTest.properties'* accordingly.
+>You may have to add the JUnit5 Library in your Build Path for JUnit tests runner.
+
+Before launching the tests, you need to create a database called : *PayMyBuddyTest* and to fill-in the *'paymybuddyTest.properties'* accordingly (same thins as explained previously for the Production database).
 
 There are dedicated SQL files for database initialization and preparation : *'CleanDBForTests.sql'* and *'DataTransactionsForTests.sql'*. In the **develop** branch, these files are automatically launched before tests so you have nothing to do on your side.
 
 For the **JDBC** and **JPA feature** branches, you have to update the database connection data, in the method called 
 *setUpAllTest()*, in order for tests to be able to launch these files.
+
