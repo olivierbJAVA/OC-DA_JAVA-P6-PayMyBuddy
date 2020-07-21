@@ -71,7 +71,7 @@ feature_RepositoryJPAndServiceTxHibernate :
 	
 You can import these branches in your favorite IDE.
 
-> If you are using Eclipse, you may have errors in the code due to the fact that the Java version is not correctly configured. To correct this issue, please right click on the project name and go to : *Properties/JavaCompiler* and ensure that the JDK/JRD version used is the **1.8**
+> **WARNING** :If you are using Eclipse, you may have errors in the code due to the fact that the Java version is not correctly configured. To correct this issue, please right click on the project name and go to : *Properties/JavaCompiler* and ensure that the JDK/JRE version used is the **1.8**
 
 ### Configuration
 
@@ -136,7 +136,7 @@ Unit and/or Integration tests are included in each branch.
 
 You can run them using JUnit runner (`Run as JUnit test`) or using Maven (`Run as Maven test`).
 
->You may have to add the JUnit5 Library in your Build Path
+>You may have to add the JUnit5 Library in your Build Path for JUnit tests runner.
 
 Before launching the tests, you need to create a database called : *PayMyBuddyTest* and to fill-in the *'paymybuddyTest.properties'* accordingly (same thins as explained previously for the Production database).
 
