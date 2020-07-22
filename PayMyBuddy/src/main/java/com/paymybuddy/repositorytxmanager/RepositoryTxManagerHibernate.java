@@ -69,8 +69,8 @@ public class RepositoryTxManagerHibernate {
 				logger.error("Error during load of paymybuddy properties file", e);
 			}
 			// paymybuddyProperties.put(Environment.DRIVER, "org.postgresql.Driver");
-			paymybuddyProperties.put(Environment.SHOW_SQL, "true");
-			paymybuddyProperties.put(Environment.FORMAT_SQL, "true");
+			paymybuddyProperties.put(Environment.SHOW_SQL, "false");
+			paymybuddyProperties.put(Environment.FORMAT_SQL, "false");
 			paymybuddyProperties.put(Environment.HBM2DDL_AUTO, "none");
 			paymybuddyProperties.put(Environment.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
 			paymybuddyProperties.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
