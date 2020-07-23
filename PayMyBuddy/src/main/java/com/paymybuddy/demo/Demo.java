@@ -58,11 +58,11 @@ public class Demo {
 		//Faire un virement sur son compte PayMyBuddy (montant négatif)
 		//utilisateurTxHibernateService.wireToAccount("bertrand.simon@gmail.com", -300d);
 	
-		//Ajouter une connection (connection n'exite pas)
+		//Ajouter une connection (connection n'existe pas)
 		//utilisateurTxHibernateService.addConnection("bertrand.simon@gmail.com", "emailConnectionNotExist@yahoo.fr");
 		
 		//Faire un virement à la connection (montant supérieur au solde)
-		//transactionTxHibernateService.makeATransaction("bertrand.simon@gmail.com", "matthieu.dupond@yahoo.fr", 1000d);
+		//transactionTxHibernateService.makeATransaction("bertrand.simon@gmail.com", "matthieu.dupond@yahoo.fr", 1000d, "Transaction test");
 		
 	}
 
