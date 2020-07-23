@@ -144,3 +144,8 @@ There are dedicated SQL files for database initialization and preparation : *'Cl
 
 For the **JDBC** and **JPA feature** branches, you have to update the database connection data, in the method called 
 *setUpAllTest()*, in order for tests to be able to launch these files.
+
+
+### DataBase Schema
+
+Schema_base_de_donnes.jpeg
