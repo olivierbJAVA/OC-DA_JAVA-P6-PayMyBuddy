@@ -83,7 +83,7 @@ public class TransactionTxHibernateService {
 	 * @return True if the transaction has been successfully executed, false if it
 	 *         has failed
 	 */
-	public boolean makeATransaction(String initiateurEmail, String contrepartieEmail, Double montant) {
+	public boolean makeATransaction(String initiateurEmail, String contrepartieEmail, Double montant, String commentaire) {
 
 		boolean transactionDone = false;
 
@@ -148,7 +148,8 @@ public class TransactionTxHibernateService {
 						transaction.setInitiateur(utilisateur);
 						transaction.setContrepartie(connection);
 						transaction.setMontant(montant);
-
+						transaction.setCommentaire(commentaire);
+						
 						transactionRepository.create(transaction);
 
 						repositoryTxManager.commitTx();

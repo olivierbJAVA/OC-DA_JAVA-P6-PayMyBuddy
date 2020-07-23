@@ -44,7 +44,7 @@ public class Demo {
 		//utilisateurTxHibernateService.addConnection("bertrand.simon@gmail.com", "matthieu.dupond@yahoo.fr");
 		
 		//Faire un virement à la connection
-		//transactionTxHibernateService.makeATransaction("bertrand.simon@gmail.com", "matthieu.dupond@yahoo.fr", 100d);
+		//transactionTxHibernateService.makeATransaction("bertrand.simon@gmail.com", "matthieu.dupond@yahoo.fr", 100d, "Demo transaction");
 
 		
 //***** DEMO CAS NOK **********************

@@ -183,7 +183,7 @@ public class TransactionTxHibernateServiceITest {
 
 		// ACT
 		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction(
-				initiateurBeforeNewTransaction.getEmail(), contrepartieBeforeNewTransaction.getEmail(), 10d);
+				initiateurBeforeNewTransaction.getEmail(), contrepartieBeforeNewTransaction.getEmail(), 10d, "Transaction test");
 
 		// ASSERT
 		assertTrue(result);
@@ -224,7 +224,7 @@ public class TransactionTxHibernateServiceITest {
 
 		// ACT
 		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction(
-				initiateurBeforeNewTransaction.getEmail(), contrepartieBeforeNewTransaction.getEmail(), -10d);
+				initiateurBeforeNewTransaction.getEmail(), contrepartieBeforeNewTransaction.getEmail(), -10d, "Transaction test");
 
 		// ASSERT
 		assertFalse(result);
@@ -254,7 +254,7 @@ public class TransactionTxHibernateServiceITest {
 
 		// ACT
 		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction("UtilisateurInitiateurNotExist",
-				contrepartieBeforeNewTransaction.getEmail(), 10d);
+				contrepartieBeforeNewTransaction.getEmail(), 10d, "Transaction test");
 
 		// ASSERT
 		assertFalse(result);
@@ -278,7 +278,7 @@ public class TransactionTxHibernateServiceITest {
 
 		// ACT
 		boolean result = transactionTxHibernateServiceUnderTest
-				.makeATransaction(initiateurBeforeNewTransaction.getEmail(), "UtilisateurContrepartieNotExist", 10d);
+				.makeATransaction(initiateurBeforeNewTransaction.getEmail(), "UtilisateurContrepartieNotExist", 10d, "Transaction test");
 
 		// ASSERT
 		assertFalse(result);
@@ -308,7 +308,7 @@ public class TransactionTxHibernateServiceITest {
 
 		// ACT
 		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction(
-				initiateurBeforeNewTransaction.getEmail(), contrepartieBeforeNewTransaction.getEmail(), 10d);
+				initiateurBeforeNewTransaction.getEmail(), contrepartieBeforeNewTransaction.getEmail(), 10d, "Transaction test");
 
 		// ASSERT
 		assertFalse(result);
@@ -340,7 +340,7 @@ public class TransactionTxHibernateServiceITest {
 
 		// ACT
 		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction(
-				initiateurBeforeNewTransaction.getEmail(), contrepartieBeforeNewTransaction.getEmail(), 1000d);
+				initiateurBeforeNewTransaction.getEmail(), contrepartieBeforeNewTransaction.getEmail(), 1000d, "Transaction test");
 
 		// ASSERT
 		assertFalse(result);
@@ -372,7 +372,7 @@ public class TransactionTxHibernateServiceITest {
 		// ACT
 		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction(
 				initiateurContrepartieBeforeTransaction.getEmail(), initiateurContrepartieBeforeTransaction.getEmail(),
-				10d);
+				10d, "Transaction test");
 
 		// ASSERT
 		assertFalse(result);
