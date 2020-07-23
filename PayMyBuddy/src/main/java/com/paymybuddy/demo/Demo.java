@@ -8,6 +8,9 @@ import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
 import com.paymybuddy.service.TransactionTxHibernateService;
 import com.paymybuddy.service.UtilisateurTxHibernateService;
 
+/**
+ * Class including tests for demo.
+ */
 public class Demo {
 
 	public static void main(String[] args) {
@@ -17,12 +20,10 @@ public class Demo {
 		RepositoryTxManagerHibernate repositoryTxManager = RepositoryTxManagerHibernate.getRepositoryTxManagerHibernate(paymybuddyPropertiesFile);
 
 		IUtilisateurRepository utilisateurRepositoryImpl = RepositoryFactory.getUtilisateurRepository(repositoryTxManager);
-
 		ITransactionRepository transactionRepositoryImpl = RepositoryFactory.getTransactionRepository(repositoryTxManager);
 			
 		TransactionTxHibernateService transactionTxHibernateService = ServiceFactory.getTransactionService(repositoryTxManager,
 				utilisateurRepositoryImpl, transactionRepositoryImpl);
-		
 		UtilisateurTxHibernateService utilisateurTxHibernateService = ServiceFactory.getUtilisateurService(repositoryTxManager,
 				utilisateurRepositoryImpl);
 		
