@@ -148,4 +148,6 @@ For the **JDBC** and **JPA feature** branches, you have to update the database c
 
 ### DataBase Schema
 
-Schema_base_de_donnes.jpeg
+You will find below the Database conception schema :
+
+![Alt text](Schema_base_de_donnes.jpeg)
