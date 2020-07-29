@@ -34,9 +34,11 @@ public class Transaction implements Serializable {
 	private Utilisateur contrepartie;
 
 	@OneToOne
+	@Column(name="compte_numero_initiateur")
 	private Compte compte_initiateur;
 	
 	@OneToOne
+	@Column(name="compte_numero_contrepartie")
 	private Compte compte_contrepartie;
 	
 	private double montant;

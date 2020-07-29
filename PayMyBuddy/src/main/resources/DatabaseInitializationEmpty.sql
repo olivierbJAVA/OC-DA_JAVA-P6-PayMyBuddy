@@ -16,11 +16,11 @@ CREATE SEQUENCE transaction_id_seq;
 
 CREATE TABLE transaction (
                 id_transaction BIGINT NOT NULL DEFAULT nextval('transaction_id_seq'),
-                email_initiateur VARCHAR(100) NOT NULL,
-                email_contrepartie VARCHAR(100) NOT NULL,
-		compte_numero_initiateur VARCHAR(50) NOT NULL,	
-		compte_numero_contrepartie VARCHAR(50) NOT NULL,       
-         	montant DECIMAL(8,2) NOT NULL,
+                initiateur_email VARCHAR(100) NOT NULL,
+                contrepartie_email VARCHAR(100) NOT NULL,
+				compte_initiateur_numero VARCHAR(50) NOT NULL,	
+				compte_contrepartie_numero VARCHAR(50) NOT NULL,       
+         		montant DECIMAL(8,2) NOT NULL,
 		frais DECIMAL(6,2) NOT NULL DEFAULT 0,
 		commentaire VARCHAR(200),
 		type VARCHAR(10) NOT NULL,	
@@ -56,7 +56,7 @@ ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
 ALTER TABLE transaction ADD CONSTRAINT connection_initiateur_contrepartie_fk
-FOREIGN KEY (email_initiateur, email_contrepartie)
+FOREIGN KEY (initiateur_email, contrepartie_email)
 REFERENCES utilisateur_connection (utilisateur_email, utilisateur_connection_email)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION

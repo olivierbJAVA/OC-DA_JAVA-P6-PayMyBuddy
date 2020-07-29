@@ -1,6 +1,11 @@
 package com.paymybuddy.repository;
 
+import java.util.List;
+
+import javax.persistence.TypedQuery;
+
 import com.paymybuddy.entity.Compte;
+import com.paymybuddy.entity.Transaction;
 import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
 
 /**
@@ -61,6 +66,23 @@ public class CompteRepositoryJpaTxHibernateImpl implements ICompteRepository {
 		Compte compte = repositoryTxManager.getCurrentSession().find(Compte.class, numero);
 
 		repositoryTxManager.getCurrentSession().remove(compte);
+	}
+	
+	/**
+	 * Return all financial transactions performed by the user having this email.
+	 * 
+	 * @param email The email of the user to get financial transactions
+	 * 
+	 * @return The list of all financial transactions for the user
+	 */
+	@Override
+	public List<Compte> getComptes(String emailUtilisateur) {
+		String REQUEST_COMPTES = "SELECT c FROM Compte c WHERE c.utilisateur.email IN ( SELECT email FROM Utilisateur WHERE email = :email )";
+
+		TypedQuery<Compte> query = repositoryTxManager.getCurrentSession().createQuery(REQUEST_COMPTES,
+				Compte.class);
+
+		return query.setParameter("email", emailUtilisateur).getResultList();
 	}
 
 }

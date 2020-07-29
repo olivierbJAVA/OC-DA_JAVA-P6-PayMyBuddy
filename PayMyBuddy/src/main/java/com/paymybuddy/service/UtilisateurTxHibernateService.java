@@ -1,15 +1,20 @@
 package com.paymybuddy.service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.paymybuddy.entity.Compte;
+import com.paymybuddy.entity.Transaction;
 import com.paymybuddy.entity.Utilisateur;
+import com.paymybuddy.repository.CompteRepositoryJpaTxHibernateImpl;
 import com.paymybuddy.repository.ICompteRepository;
+import com.paymybuddy.repository.ITransactionRepository;
 import com.paymybuddy.repository.IUtilisateurRepository;
+import com.paymybuddy.repository.UtilisateurRepositoryJpaTxHibernateImpl;
 import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
 
 /**
@@ -23,13 +28,16 @@ public class UtilisateurTxHibernateService {
 
 	private IUtilisateurRepository utilisateurRepository;
 
+	private ITransactionRepository transactionRepository;
+	
 	private ICompteRepository compteRepository;
 	
 	public UtilisateurTxHibernateService(RepositoryTxManagerHibernate repositoryTxManager,
-			IUtilisateurRepository utilisateurRepository, ICompteRepository compteRepository) {
+			IUtilisateurRepository utilisateurRepository, ITransactionRepository transactionRepository, ICompteRepository compteRepository) {
 		super();
 		this.repositoryTxManager = repositoryTxManager;
 		this.utilisateurRepository = utilisateurRepository;
+		this.transactionRepository = transactionRepository;
 		this.compteRepository = compteRepository;
 	}
 
@@ -157,7 +165,7 @@ public class UtilisateurTxHibernateService {
 	 * @return True if the wire has been successfully executed, false if it has
 	 *         failed
 	 */
-	public boolean wireToAccount(String utilisateurEmail, Double montant) {
+	public boolean wireToAccount(String utilisateurEmail, Double montant, String numeroCompte) {
 
 		boolean wireToAccountDone = false;
 
@@ -177,6 +185,9 @@ public class UtilisateurTxHibernateService {
 					logger.error("Wire to account : Utilisateur {} does not exist", utilisateurEmail);
 				} else {
 
+					Compte comptePaymybuddy = compteRepository.read(utilisateurEmail+"_PMB");
+					Compte compteBancaire = compteRepository.read(numeroCompte);
+					
 					// If all is ok, we update the utilisateur with a new solde being the old one
 					// plus the amount wired
 					Double oldSolde = utilisateurToUpdate.getSolde();
@@ -184,7 +195,19 @@ public class UtilisateurTxHibernateService {
 					utilisateurToUpdate.setSolde(newSolde);
 
 					utilisateurRepository.update(utilisateurToUpdate);
-
+					
+					// Finally we create the financial transaction in the database
+					Transaction transaction = new Transaction();
+					transaction.setInitiateur(utilisateurToUpdate);
+					transaction.setContrepartie(utilisateurToUpdate);
+					transaction.setMontant(montant);
+					transaction.setCommentaire("");
+					transaction.setType("virement");
+					transaction.setCompte_initiateur(compteBancaire);
+					transaction.setCompte_contrepartie(comptePaymybuddy);
+					
+					transactionRepository.create(transaction);
+					
 					repositoryTxManager.commitTx();
 
 					logger.info("Wire to account by Utilisateur {} for amount {} : done", utilisateurEmail, montant);
@@ -380,8 +403,7 @@ public class UtilisateurTxHibernateService {
 					logger.error("Add a bank account : Utilisateur {} does not exist", utilisateurEmail);
 
 				} else {
-					Set<Compte> utilisateurComptes = utilisateurToAddCompte.getCompte();
-
+					//Set<Compte> utilisateurComptes = utilisateurToAddCompte.getCompte();
 					
 					// We create the bank account to add
 					Compte bankAccountToAdd = new Compte();
@@ -390,24 +412,20 @@ public class UtilisateurTxHibernateService {
 					bankAccountToAdd.setType("bancaire");
 					bankAccountToAdd.setUtilisateur(utilisateurToAddCompte);
 					
+					
 					// We check that the utilisateur has not already the account
+					List<Compte> utilisateurComptes = compteRepository.getComptes(utilisateurEmail);	
 					if (utilisateurComptes.contains(bankAccountToAdd)) {
-						logger.error("Add a bank account : Utilisateur {} has already Compte {}", utilisateurEmail,
+					logger.error("Add a bank account : Utilisateur {} has already Compte {}", utilisateurEmail,
 								numeroCompte);
 					} else {
 					
 						// If all is ok, then we add the new account to the utilisateur :
-													
-							compteRepository.create(bankAccountToAdd);
-							/*
-							Set<Compte> utilisateurComptes = new HashSet<>();
-							utilisateurComptes.add(paymybuddyAccount);
-							*/
+						compteRepository.create(bankAccountToAdd);
+									
+						// We add the PayMyBuddy account to  the utilisateur list of accounts
+						utilisateurRepository.addCompte(utilisateurToAddCompte, bankAccountToAdd);
 							
-							// We add the PayMyBuddy account to  the utilisateur list of accounts
-							utilisateurRepository.addCompte(utilisateurToAddCompte, bankAccountToAdd);
-							
-
 						repositoryTxManager.commitTx();
 
 						logger.info("Add a bank account : Utilisateur {} Compte {} added", utilisateurEmail,

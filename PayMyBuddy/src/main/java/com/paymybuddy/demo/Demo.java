@@ -49,7 +49,7 @@ public class Demo {
 		TransactionTxHibernateService transactionTxHibernateService = ServiceFactory.getTransactionService(repositoryTxManager,
 				utilisateurRepositoryImpl, transactionRepositoryImpl);
 		UtilisateurTxHibernateService utilisateurTxHibernateService = ServiceFactory.getUtilisateurService(repositoryTxManager,
-				utilisateurRepositoryImpl, compteRepositoryImpl);
+				utilisateurRepositoryImpl, transactionRepositoryImpl, compteRepositoryImpl);
 		
 		
 //***** DEMO CAS OK **********************
@@ -62,10 +62,10 @@ public class Demo {
 		
 		// Ajouter un compte bancaire externe
 		utilisateurTxHibernateService.addCompte("bertrand.simon@gmail.com", "123SG", "SG");
-		//utilisateurTxHibernateService.addCompte("bertrand.simon@gmail.com", "123SG", "SG");
+		utilisateurTxHibernateService.addCompte("bertrand.simon@gmail.com", "123SG", "SG");
 		
 		//Faire un virement sur son compte PayMyBuddy
-		//utilisateurTxHibernateService.wireToAccount("bertrand.simon@gmail.com", 300d);
+		utilisateurTxHibernateService.wireToAccount("bertrand.simon@gmail.com", 300d, "123SG");
 	
 		//Ajouter une connection
 		//utilisateurTxHibernateService.registerToApplication("matthieu.dupond@yahoo.fr", "md");

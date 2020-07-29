@@ -1,5 +1,7 @@
 package com.paymybuddy.repository;
 
+import java.util.List;
+
 import com.paymybuddy.entity.Compte;
 
 /**
@@ -36,5 +38,7 @@ public interface ICompteRepository {
 	 * @param numero The number of the account to delete
 	 */
 	public void delete(String numero);
+
+	public List<Compte> getComptes(String emailUtilisateur);
 }
 

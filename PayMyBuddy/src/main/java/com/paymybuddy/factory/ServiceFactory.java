@@ -74,11 +74,11 @@ public class ServiceFactory {
 	 * @return The Utilisateur service
 	 */
 	public static UtilisateurTxHibernateService getUtilisateurService(RepositoryTxManagerHibernate repositoryTxManager,
-			IUtilisateurRepository utilisateurRepository, ICompteRepository compteRepository) {
+			IUtilisateurRepository utilisateurRepository,  ITransactionRepository transactionRepositor, ICompteRepository compteRepository) {
 
 		if (utilisateurService == null) {
 
-			utilisateurService = new UtilisateurTxHibernateService(repositoryTxManager, utilisateurRepository, compteRepository);
+			utilisateurService = new UtilisateurTxHibernateService(repositoryTxManager, utilisateurRepository, transactionRepositor, compteRepository);
 
 			logger.info("Factory : Creation Utilisateur Service with Hibernate Tx management OK");
 		}
