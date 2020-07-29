@@ -3,6 +3,7 @@ package com.paymybuddy.factory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.paymybuddy.repository.ICompteRepository;
 import com.paymybuddy.repository.ITransactionRepository;
 import com.paymybuddy.repository.IUtilisateurRepository;
 import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
@@ -73,11 +74,11 @@ public class ServiceFactory {
 	 * @return The Utilisateur service
 	 */
 	public static UtilisateurTxHibernateService getUtilisateurService(RepositoryTxManagerHibernate repositoryTxManager,
-			IUtilisateurRepository utilisateurRepository) {
+			IUtilisateurRepository utilisateurRepository, ICompteRepository compteRepository) {
 
 		if (utilisateurService == null) {
 
-			utilisateurService = new UtilisateurTxHibernateService(repositoryTxManager, utilisateurRepository);
+			utilisateurService = new UtilisateurTxHibernateService(repositoryTxManager, utilisateurRepository, compteRepository);
 
 			logger.info("Factory : Creation Utilisateur Service with Hibernate Tx management OK");
 		}

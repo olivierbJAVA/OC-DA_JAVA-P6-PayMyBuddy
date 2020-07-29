@@ -3,6 +3,8 @@ package com.paymybuddy.factory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.paymybuddy.repository.CompteRepositoryJpaTxHibernateImpl;
+import com.paymybuddy.repository.ICompteRepository;
 import com.paymybuddy.repository.ITransactionRepository;
 import com.paymybuddy.repository.IUtilisateurRepository;
 import com.paymybuddy.repository.TransactionRepositoryJpaTxHibernateImpl;
@@ -10,8 +12,8 @@ import com.paymybuddy.repository.UtilisateurRepositoryJpaTxHibernateImpl;
 import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
 
 /**
- * Class Factory in charge of construction and reset of Utilisateur repository
- * and Transaction repository.
+ * Class Factory in charge of construction and reset of Utilisateur,
+ * Transaction and Compte repository.
  */
 public class RepositoryFactory {
 
@@ -21,6 +23,8 @@ public class RepositoryFactory {
 
 	private static IUtilisateurRepository utilisateurRepository = null;
 
+	private static ICompteRepository compteRepository = null;
+	
 	private RepositoryFactory() {
 	}
 	
@@ -85,4 +89,36 @@ public class RepositoryFactory {
 		logger.info("Factory : Reset JPA persistence Utilisateur Repository with Hibernate Tx management : OK");
 
 	}
+	
+	/**
+	 * Create a Compte repository (JPA persistence and Tx managed by
+	 * Hibernate).
+	 * 
+	 * @param repositoryManger The repositoryManger used to manage tx
+	 * 
+	 * @return The Compte repository created
+	 */
+	public static ICompteRepository getCompteRepository(RepositoryTxManagerHibernate repositoryManger) {
+
+		if (compteRepository == null) {
+
+			compteRepository = new CompteRepositoryJpaTxHibernateImpl(repositoryManger);
+
+			logger.info("Factory : Creation JPA persistence Compte Repository with Hibernate Tx management : OK");
+		}
+
+		return compteRepository;
+	}
+
+	/**
+	 * Reset the Compte repository.
+	 */
+	public static void resetCompteRepository() {
+
+		compteRepository = null;
+		
+		logger.info("Factory : Reset JPA persistence Compte Repository with Hibernate Tx management : OK");
+
+	}
+	
 }

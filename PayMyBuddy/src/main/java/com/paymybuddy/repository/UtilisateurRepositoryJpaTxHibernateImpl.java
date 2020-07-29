@@ -1,5 +1,6 @@
 package com.paymybuddy.repository;
 
+import com.paymybuddy.entity.Compte;
 import com.paymybuddy.entity.Utilisateur;
 import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
 
@@ -64,7 +65,7 @@ public class UtilisateurRepositoryJpaTxHibernateImpl implements IUtilisateurRepo
 	}
 
 	/**
-	 * Add a connection in the repository.
+	 * Add a connection for an user.
 	 * 
 	 * @param utilisateur The user for which to add a connection
 	 * 
@@ -72,6 +73,18 @@ public class UtilisateurRepositoryJpaTxHibernateImpl implements IUtilisateurRepo
 	 */
 	@Override
 	public void addConnection(Utilisateur utilisateur, Utilisateur connection) {
+		update(utilisateur);
+	}
+	
+	/**
+	 * Add an account for an user.
+	 * 
+	 * @param utilisateur The user for which to add an account
+	 * 
+	 * @param compte The account to be added to the user
+	 */
+	@Override
+	public void addCompte(Utilisateur utilisateur, Compte compte) {
 		update(utilisateur);
 	}
 }

@@ -1,5 +1,6 @@
 package com.paymybuddy.repository;
 
+import com.paymybuddy.entity.Compte;
 import com.paymybuddy.entity.Utilisateur;
 
 /**
@@ -38,12 +39,21 @@ public interface IUtilisateurRepository {
 	public void delete(String email);
 
 	/**
-	 * Add a connection in the repository.
+	 * Add a connection for an user.
 	 * 
 	 * @param utilisateur The user for which to add a connection
 	 * 
 	 * @param connection  The connection to be added to the user
 	 */
 	public void addConnection(Utilisateur utilisateur, Utilisateur connection);
+	
+	/**
+	 * Add an account for an user.
+	 * 
+	 * @param utilisateur The user for which to add an account
+	 * 
+	 * @param compte The account to be added to the user
+	 */
+	public void addCompte(Utilisateur utilisateur, Compte compte);
 }
 

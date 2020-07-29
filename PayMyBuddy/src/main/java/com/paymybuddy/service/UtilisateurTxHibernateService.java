@@ -6,7 +6,9 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.paymybuddy.entity.Compte;
 import com.paymybuddy.entity.Utilisateur;
+import com.paymybuddy.repository.ICompteRepository;
 import com.paymybuddy.repository.IUtilisateurRepository;
 import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
 
@@ -21,11 +23,14 @@ public class UtilisateurTxHibernateService {
 
 	private IUtilisateurRepository utilisateurRepository;
 
+	private ICompteRepository compteRepository;
+	
 	public UtilisateurTxHibernateService(RepositoryTxManagerHibernate repositoryTxManager,
-			IUtilisateurRepository utilisateurRepository) {
+			IUtilisateurRepository utilisateurRepository, ICompteRepository compteRepository) {
 		super();
 		this.repositoryTxManager = repositoryTxManager;
 		this.utilisateurRepository = utilisateurRepository;
+		this.compteRepository = compteRepository;
 	}
 
 	/**
@@ -59,7 +64,23 @@ public class UtilisateurTxHibernateService {
 				utilisateurToCreate.setSolde(0d);
 
 				utilisateurRepository.create(utilisateurToCreate);
-
+				
+				// We create the PayMyBuddy account for the utilisateur 
+				Compte paymybuddyAccount = new Compte();
+				paymybuddyAccount.setNumero(utilisateurEmail+"_PMB");
+				paymybuddyAccount.setBanque("PayMyBuddy");
+				paymybuddyAccount.setType("PayMyBuddy");
+				paymybuddyAccount.setUtilisateur(utilisateurToCreate);
+				
+				compteRepository.create(paymybuddyAccount);
+				/*
+				Set<Compte> utilisateurComptes = new HashSet<>();
+				utilisateurComptes.add(paymybuddyAccount);
+				*/
+				
+				// We add the PayMyBuddy account to  the utilisateur list of accounts
+				utilisateurRepository.addCompte(utilisateurToCreate, paymybuddyAccount);
+				
 				repositoryTxManager.commitTx();
 
 				logger.info("Registration : Utilisateur {} registered", utilisateurEmail);
@@ -329,6 +350,82 @@ public class UtilisateurTxHibernateService {
 		}
 
 		return connectionAdded;
+	}
+	
+	/**
+	 * Method managing the addition by a user of a new bank account.
+	 * 
+	 * @param utilisateurEmail The email of the user for which to add a new
+	 *                         bank account
+	 * 
+	 * @param numeroCompte  	The number of the bank account to add
+	 * 
+	 * @param banque  	The bank of the bank account to add
+	 * 
+	 * @return True if the bank account add has been successfully executed, false if
+	 *         it has failed
+	 */
+	public boolean addCompte(String utilisateurEmail, String numeroCompte, String banque) {
+
+		boolean compteAdded = false;
+
+			try {
+				repositoryTxManager.openCurrentSessionWithTx();
+
+				Utilisateur utilisateurToAddCompte = utilisateurRepository.read(utilisateurEmail);
+
+				// We check that the utilisateur to which add a connection is registered in the
+				// application
+				if (utilisateurToAddCompte == null) {
+					logger.error("Add a bank account : Utilisateur {} does not exist", utilisateurEmail);
+
+				} else {
+					Set<Compte> utilisateurComptes = utilisateurToAddCompte.getCompte();
+
+					
+					// We create the bank account to add
+					Compte bankAccountToAdd = new Compte();
+					bankAccountToAdd.setNumero(numeroCompte);
+					bankAccountToAdd.setBanque(banque);
+					bankAccountToAdd.setType("bancaire");
+					bankAccountToAdd.setUtilisateur(utilisateurToAddCompte);
+					
+					// We check that the utilisateur has not already the account
+					if (utilisateurComptes.contains(bankAccountToAdd)) {
+						logger.error("Add a bank account : Utilisateur {} has already Compte {}", utilisateurEmail,
+								numeroCompte);
+					} else {
+					
+						// If all is ok, then we add the new account to the utilisateur :
+													
+							compteRepository.create(bankAccountToAdd);
+							/*
+							Set<Compte> utilisateurComptes = new HashSet<>();
+							utilisateurComptes.add(paymybuddyAccount);
+							*/
+							
+							// We add the PayMyBuddy account to  the utilisateur list of accounts
+							utilisateurRepository.addCompte(utilisateurToAddCompte, bankAccountToAdd);
+							
+
+						repositoryTxManager.commitTx();
+
+						logger.info("Add a bank account : Utilisateur {} Compte {} added", utilisateurEmail,
+								numeroCompte);
+
+						compteAdded = true;
+					}
+				}		
+			} catch (Exception e) {
+				logger.error("Add a bank account : Error in Utilisateur {} add bank account", utilisateurEmail);
+
+				repositoryTxManager.rollbackTx();
+			} finally {
+
+				repositoryTxManager.closeCurrentSession();
+			}
+
+		return compteAdded;
 	}
 
 }

@@ -69,8 +69,8 @@ public class RepositoryTxManagerHibernate {
 				logger.error("Error during load of paymybuddy properties file", e);
 			}
 			// paymybuddyProperties.put(Environment.DRIVER, "org.postgresql.Driver");
-			paymybuddyProperties.put(Environment.SHOW_SQL, "false");
-			paymybuddyProperties.put(Environment.FORMAT_SQL, "false");
+			paymybuddyProperties.put(Environment.SHOW_SQL, "true");
+			paymybuddyProperties.put(Environment.FORMAT_SQL, "true");
 			paymybuddyProperties.put(Environment.HBM2DDL_AUTO, "none");
 			paymybuddyProperties.put(Environment.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
 			paymybuddyProperties.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
@@ -81,7 +81,9 @@ public class RepositoryTxManagerHibernate {
 			Configuration configuration = new Configuration().setProperties(paymybuddyProperties);
 
 			sessionFactory = configuration.addAnnotatedClass(com.paymybuddy.entity.Transaction.class)
-					.addAnnotatedClass(com.paymybuddy.entity.Utilisateur.class).buildSessionFactory();
+					.addAnnotatedClass(com.paymybuddy.entity.Utilisateur.class)
+					.addAnnotatedClass(com.paymybuddy.entity.Compte.class)
+					.buildSessionFactory();
 
 			logger.info("Creation of Hibernate SessionFactory : OK");
 		}

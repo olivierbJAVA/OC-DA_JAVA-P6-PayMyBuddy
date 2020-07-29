@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -32,22 +33,37 @@ public class Transaction implements Serializable {
 	@ManyToOne
 	private Utilisateur contrepartie;
 
+	@OneToOne
+	private Compte compte_initiateur;
+	
+	@OneToOne
+	private Compte compte_contrepartie;
+	
 	private double montant;
 
+	private double frais;
+	
 	private String commentaire;
+
+	private String type;
 
 	public Transaction() {
 		super();
+		// TODO Auto-generated constructor stub
 	}
 
-	public Transaction(long idTransaction, Utilisateur initiateur, Utilisateur contrepartie, double montant,
-			String commentaire) {
+	public Transaction(long idTransaction, Utilisateur initiateur, Utilisateur contrepartie, Compte compte_initiateur,
+			Compte compte_contrepartie, double montant, double frais, String commentaire, String type) {
 		super();
 		this.idTransaction = idTransaction;
 		this.initiateur = initiateur;
 		this.contrepartie = contrepartie;
+		this.compte_initiateur = compte_initiateur;
+		this.compte_contrepartie = compte_contrepartie;
 		this.montant = montant;
+		this.frais = frais;
 		this.commentaire = commentaire;
+		this.type = type;
 	}
 
 	public long getIdTransaction() {
@@ -74,12 +90,36 @@ public class Transaction implements Serializable {
 		this.contrepartie = contrepartie;
 	}
 
+	public Compte getCompte_initiateur() {
+		return compte_initiateur;
+	}
+
+	public void setCompte_initiateur(Compte compte_initiateur) {
+		this.compte_initiateur = compte_initiateur;
+	}
+
+	public Compte getCompte_contrepartie() {
+		return compte_contrepartie;
+	}
+
+	public void setCompte_contrepartie(Compte compte_contrepartie) {
+		this.compte_contrepartie = compte_contrepartie;
+	}
+
 	public double getMontant() {
 		return montant;
 	}
 
 	public void setMontant(double montant) {
 		this.montant = montant;
+	}
+
+	public double getFrais() {
+		return frais;
+	}
+
+	public void setFrais(double frais) {
+		this.frais = frais;
 	}
 
 	public String getCommentaire() {
@@ -90,48 +130,12 @@ public class Transaction implements Serializable {
 		this.commentaire = commentaire;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((commentaire == null) ? 0 : commentaire.hashCode());
-		result = prime * result + ((contrepartie == null) ? 0 : contrepartie.hashCode());
-		result = prime * result + (int) (idTransaction ^ (idTransaction >>> 32));
-		result = prime * result + ((initiateur == null) ? 0 : initiateur.hashCode());
-		long temp;
-		temp = Double.doubleToLongBits(montant);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		return result;
+	public String getType() {
+		return type;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Transaction other = (Transaction) obj;
-		if (commentaire == null) {
-			if (other.commentaire != null)
-				return false;
-		} else if (!commentaire.equals(other.commentaire))
-			return false;
-		if (contrepartie == null) {
-			if (other.contrepartie != null)
-				return false;
-		} else if (!contrepartie.equals(other.contrepartie))
-			return false;
-		if (idTransaction != other.idTransaction)
-			return false;
-		if (initiateur == null) {
-			if (other.initiateur != null)
-				return false;
-		} else if (!initiateur.equals(other.initiateur))
-			return false;
-		if (Double.doubleToLongBits(montant) != Double.doubleToLongBits(other.montant))
-			return false;
-		return true;
+	public void setType(String type) {
+		this.type = type;
 	}
+	
 }

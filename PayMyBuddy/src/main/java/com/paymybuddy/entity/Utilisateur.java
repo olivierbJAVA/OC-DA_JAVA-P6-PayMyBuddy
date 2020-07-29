@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -30,16 +31,21 @@ public class Utilisateur implements Serializable {
 	@JoinTable(name = "utilisateur_connection", joinColumns = @JoinColumn(name = "utilisateur_email"), inverseJoinColumns = @JoinColumn(name = "utilisateur_connection_email", nullable = true))
 	private Set<Utilisateur> connection;
 
+	@OneToMany
+	private Set<Compte> compte;
+
 	public Utilisateur() {
 		super();
+		// TODO Auto-generated constructor stub
 	}
 
-	public Utilisateur(String email, String password, Double solde, Set<Utilisateur> connection) {
+	public Utilisateur(String email, String password, Double solde, Set<Utilisateur> connection, Set<Compte> compte) {
 		super();
 		this.email = email;
 		this.password = password;
 		this.solde = solde;
 		this.connection = connection;
+		this.compte = compte;
 	}
 
 	public String getEmail() {
@@ -74,10 +80,19 @@ public class Utilisateur implements Serializable {
 		this.connection = connection;
 	}
 
+	public Set<Compte> getCompte() {
+		return compte;
+	}
+
+	public void setCompte(Set<Compte> compte) {
+		this.compte = compte;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((compte == null) ? 0 : compte.hashCode());
 		result = prime * result + ((connection == null) ? 0 : connection.hashCode());
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
 		result = prime * result + ((password == null) ? 0 : password.hashCode());
@@ -94,6 +109,11 @@ public class Utilisateur implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Utilisateur other = (Utilisateur) obj;
+		if (compte == null) {
+			if (other.compte != null)
+				return false;
+		} else if (!compte.equals(other.compte))
+			return false;
 		if (connection == null) {
 			if (other.connection != null)
 				return false;
@@ -116,4 +136,6 @@ public class Utilisateur implements Serializable {
 			return false;
 		return true;
 	}
+	
+
 }
