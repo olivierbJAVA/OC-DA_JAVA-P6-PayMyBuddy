@@ -16,10 +16,10 @@ CREATE SEQUENCE transaction_id_seq;
 
 CREATE TABLE transaction (
                 id_transaction BIGINT NOT NULL DEFAULT nextval('transaction_id_seq'),
-                email_initiateur VARCHAR(100) NOT NULL,
-                email_contrepartie VARCHAR(100) NOT NULL,
-		compte_numero_initiateur VARCHAR(50) NOT NULL,	
-		compte_numero_contrepartie VARCHAR(50) NOT NULL,       
+                initiateur_email VARCHAR(100) NOT NULL,
+                contrepartie_email VARCHAR(100) NOT NULL,
+		compte_initiateur_numero VARCHAR(50) NOT NULL,	
+		compte_contrepartie_numero VARCHAR(50) NOT NULL,       
          	montant DECIMAL(8,2) NOT NULL,
 		frais DECIMAL(6,2) NOT NULL DEFAULT 0,
 		commentaire VARCHAR(200),
@@ -56,21 +56,21 @@ ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
 ALTER TABLE transaction ADD CONSTRAINT connection_initiateur_contrepartie_fk
-FOREIGN KEY (email_initiateur, email_contrepartie)
+FOREIGN KEY (initiateur_email, contrepartie_email)
 REFERENCES utilisateur_connection (utilisateur_email, utilisateur_connection_email)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
 ALTER TABLE transaction ADD CONSTRAINT compte_numero_initiateur_fk
-FOREIGN KEY (compte_numero_initiateur)
+FOREIGN KEY (compte_initiateur_numero)
 REFERENCES compte (numero)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
 ALTER TABLE transaction ADD CONSTRAINT compte_numero_contrepartie_fk
-FOREIGN KEY (compte_numero_contrepartie)
+FOREIGN KEY (compte_contrepartie_numero)
 REFERENCES compte (numero)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
@@ -82,6 +82,7 @@ REFERENCES utilisateur (email)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
+
 
 INSERT INTO utilisateur 
 (
@@ -126,37 +127,37 @@ INSERT INTO compte
 	numero, banque, utilisateur_email, type
 ) 
 VALUES 
-	('123SG', 'SG', 'achristie@policier.com', 'bancaire'),
-	('1PMB', 'PMB', 'achristie@policier.com', 'paymybuddy'),	
+	('123SG', 'Societe Generale', 'achristie@policier.com', 'bancaire'),
+	('achristie@policier.com_PMB', 'PayMyBuddy', 'achristie@policier.com', 'paymybuddy'),	
 
-	('456SG', 'SG', 'jdcarr@policier.com', 'bancaire'),
-	('2PMB', 'PMB', 'jdcarr@policier.com', 'paymybuddy'),
+	('456SG', 'Societe Generale', 'jdcarr@policier.com', 'bancaire'),
+	('jdcarr@policier.com_PMB', 'PayMyBuddy', 'jdcarr@policier.com', 'paymybuddy'),
 
-	('789SG', 'SG', 'phalter@policier.com', 'bancaire'),
-	('3PMB', 'PMB', 'phalter@policier.com', 'paymybuddy'),	
+	('789SG', 'Societe Generale', 'phalter@policier.com', 'bancaire'),
+	('phalter@policier.com_PMB', 'PayMyBuddy', 'phalter@policier.com', 'paymybuddy'),	
 
-	('123BNP', 'BNP', 'jrrtolkien@fantasy.com', 'bancaire'),
-	('4PMB', 'PMB', 'jrrtolkien@fantasy.com', 'paymybuddy'),
+	('123BNP', 'BNP Paribas', 'jrrtolkien@fantasy.com', 'bancaire'),
+	('jrrtolkien@fantasy.com_PMB', 'PayMyBuddy', 'jrrtolkien@fantasy.com', 'paymybuddy'),
 	
-	('456BNP', 'BNP', 'grrmartin@fantasy.com', 'bancaire'),
-	('5PMB', 'PMB', 'grrmartin@fantasy.com', 'paymybuddy'),
+	('456BNP', 'BNP Paribas', 'grrmartin@fantasy.com', 'bancaire'),
+	('grrmartin@fantasy.com_PMB', 'PayMyBuddy', 'grrmartin@fantasy.com', 'paymybuddy'),
 	
-	('1CA', 'CA', 'iasimov@sf.com', 'bancaire'),
-	('1SG', 'SG', 'iasimov@sf.com', 'bancaire'),
-	('1BNP', 'BNP', 'iasimov@sf.com', 'bancaire'),
-	('6PMB', 'PMB', 'iasimov@sf.com', 'paymybuddy')
+	('1CA', 'Credit Agricole', 'iasimov@sf.com', 'bancaire'),
+	('1SG', 'Societe Generale', 'iasimov@sf.com', 'bancaire'),
+	('1BNP', 'BNP Paribas', 'iasimov@sf.com', 'bancaire'),
+	('iasimov@sf.com_PMB', 'PayMyBuddy', 'iasimov@sf.com', 'paymybuddy')
 ;
 
 INSERT INTO transaction
- 	(email_initiateur, email_contrepartie, montant, commentaire, type, compte_numero_initiateur, compte_numero_contrepartie, frais)
+ 	(initiateur_email, contrepartie_email, montant, commentaire, type, compte_initiateur_numero, compte_contrepartie_numero, frais)
 VALUES 
-	('achristie@policier.com', 'achristie@policier.com', 123, 'ac_virement', 'virement', '1PMB', '123SG', 0),
-	('achristie@policier.com', 'achristie@policier.com', 456, 'ac_depot', 'depot', '123SG', '1PMB', 0),
-	('achristie@policier.com', 'jdcarr@policier.com', 100, 'ac_transfert', 'transfert', '1PMB', '2PMB', 0.5),
-	('achristie@policier.com', 'jdcarr@policier.com', 300, 'ac_transfert', 'transfert', '1PMB','2PMB', 1.5),
-	('achristie@policier.com', 'phalter@policier.com', 10, 'ac_transfert', 'transfert', '1PMB', '3PMB', 0.05),
+	('achristie@policier.com', 'achristie@policier.com', 123, 'ac_virement', 'virement', 'achristie@policier.com_PMB', '123SG', 0),
+	('achristie@policier.com', 'achristie@policier.com', 456, 'ac_depot', 'depot', '123SG', 'achristie@policier.com_PMB', 0),
+	('achristie@policier.com', 'jdcarr@policier.com', 100, 'ac_transfert', 'transfert', 'achristie@policier.com_PMB', 'jdcarr@policier.com_PMB', 0.5),
+	('achristie@policier.com', 'jdcarr@policier.com', 300, 'ac_transfert', 'transfert', 'achristie@policier.com_PMB','jdcarr@policier.com_PMB', 1.5),
+	('achristie@policier.com', 'phalter@policier.com', 10, 'ac_transfert', 'transfert', 'achristie@policier.com_PMB', 'phalter@policier.com_PMB', 0.05),
  
-	('jrrtolkien@fantasy.com', 'grrmartin@fantasy.com', 321, 'jrrt_transfert', 'transfert', '4PMB', '5PMB', 1.61)
+	('jrrtolkien@fantasy.com', 'grrmartin@fantasy.com', 321, 'jrrt_transfert', 'transfert', 'jrrtolkien@fantasy.com_PMB', 'grrmartin@fantasy.com_PMB', 1.61)
 ;
 
 COMMIT;

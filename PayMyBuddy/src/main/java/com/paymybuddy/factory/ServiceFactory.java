@@ -39,12 +39,12 @@ public class ServiceFactory {
 	 * @return The Transaction service
 	 */
 	public static TransactionTxHibernateService getTransactionService(RepositoryTxManagerHibernate repositoryTxManager,
-			IUtilisateurRepository utilisateurRepository, ITransactionRepository transactionRepository) {
+			IUtilisateurRepository utilisateurRepository, ITransactionRepository transactionRepository, ICompteRepository compteRepository) {
 
 		if (transactionService == null) {
 
 			transactionService = new TransactionTxHibernateService(repositoryTxManager, utilisateurRepository,
-					transactionRepository);
+					transactionRepository, compteRepository);
 
 			logger.info("Factory : Creation Transaction Service with Hibernate Tx management OK");
 		}
@@ -74,11 +74,11 @@ public class ServiceFactory {
 	 * @return The Utilisateur service
 	 */
 	public static UtilisateurTxHibernateService getUtilisateurService(RepositoryTxManagerHibernate repositoryTxManager,
-			IUtilisateurRepository utilisateurRepository,  ITransactionRepository transactionRepositor, ICompteRepository compteRepository) {
+			IUtilisateurRepository utilisateurRepository, ICompteRepository compteRepository) {
 
 		if (utilisateurService == null) {
 
-			utilisateurService = new UtilisateurTxHibernateService(repositoryTxManager, utilisateurRepository, transactionRepositor, compteRepository);
+			utilisateurService = new UtilisateurTxHibernateService(repositoryTxManager, utilisateurRepository, compteRepository);
 
 			logger.info("Factory : Creation Utilisateur Service with Hibernate Tx management OK");
 		}

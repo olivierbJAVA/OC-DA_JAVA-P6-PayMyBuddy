@@ -18,9 +18,9 @@ CREATE TABLE transaction (
                 id_transaction BIGINT NOT NULL DEFAULT nextval('transaction_id_seq'),
                 initiateur_email VARCHAR(100) NOT NULL,
                 contrepartie_email VARCHAR(100) NOT NULL,
-		compte_initiateur_numero VARCHAR(50) NOT NULL,	
-		compte_contrepartie_numero VARCHAR(50) NOT NULL,       
-         	montant DECIMAL(8,2) NOT NULL,
+				compte_initiateur_numero VARCHAR(50) NOT NULL,	
+				compte_contrepartie_numero VARCHAR(50) NOT NULL,       
+         		montant DECIMAL(8,2) NOT NULL,
 		frais DECIMAL(6,2) NOT NULL DEFAULT 0,
 		commentaire VARCHAR(200),
 		type VARCHAR(10) NOT NULL,	
@@ -63,14 +63,14 @@ ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
 ALTER TABLE transaction ADD CONSTRAINT compte_numero_initiateur_fk
-FOREIGN KEY (compte_initiateur_numero)
+FOREIGN KEY (compte_numero_initiateur)
 REFERENCES compte (numero)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
 ALTER TABLE transaction ADD CONSTRAINT compte_numero_contrepartie_fk
-FOREIGN KEY (compte_contrepartie_numero)
+FOREIGN KEY (compte_numero_contrepartie)
 REFERENCES compte (numero)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION

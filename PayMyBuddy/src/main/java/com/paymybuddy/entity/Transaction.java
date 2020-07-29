@@ -33,31 +33,29 @@ public class Transaction implements Serializable {
 	@ManyToOne
 	private Utilisateur contrepartie;
 
+	//@Column(name="compte_numero_initiateur")
 	@OneToOne
-	@Column(name="compte_numero_initiateur")
 	private Compte compte_initiateur;
-	
+
+	//@Column(name="compte_numero_contrepartie")
 	@OneToOne
-	@Column(name="compte_numero_contrepartie")
 	private Compte compte_contrepartie;
-	
+
 	private double montant;
 
 	private double frais;
-	
+
 	private String commentaire;
 
 	private String type;
 
 	public Transaction() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
-	public Transaction(long idTransaction, Utilisateur initiateur, Utilisateur contrepartie, Compte compte_initiateur,
+	public Transaction(Utilisateur initiateur, Utilisateur contrepartie, Compte compte_initiateur,
 			Compte compte_contrepartie, double montant, double frais, String commentaire, String type) {
 		super();
-		this.idTransaction = idTransaction;
 		this.initiateur = initiateur;
 		this.contrepartie = contrepartie;
 		this.compte_initiateur = compte_initiateur;
@@ -139,5 +137,5 @@ public class Transaction implements Serializable {
 	public void setType(String type) {
 		this.type = type;
 	}
-	
+
 }

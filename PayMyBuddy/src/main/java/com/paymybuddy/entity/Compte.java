@@ -5,7 +5,6 @@ import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 /**
@@ -23,14 +22,12 @@ public class Compte implements Serializable {
 	private String banque;
 
 	private String type;
-	
+
 	@ManyToOne
 	private Utilisateur utilisateur;
 
-	
 	public Compte() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public Compte(String numero, String banque, String type, Utilisateur utilisateur) {
@@ -73,50 +70,4 @@ public class Compte implements Serializable {
 		this.utilisateur = utilisateur;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((banque == null) ? 0 : banque.hashCode());
-		result = prime * result + ((numero == null) ? 0 : numero.hashCode());
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
-		result = prime * result + ((utilisateur == null) ? 0 : utilisateur.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Compte other = (Compte) obj;
-		if (banque == null) {
-			if (other.banque != null)
-				return false;
-		} else if (!banque.equals(other.banque))
-			return false;
-		if (numero == null) {
-			if (other.numero != null)
-				return false;
-		} else if (!numero.equals(other.numero))
-			return false;
-		if (type == null) {
-			if (other.type != null)
-				return false;
-		} else if (!type.equals(other.type))
-			return false;
-		if (utilisateur == null) {
-			if (other.utilisateur != null)
-				return false;
-		} else if (!utilisateur.equals(other.utilisateur))
-			return false;
-		return true;
-	}
-
-	
-
-	
 }

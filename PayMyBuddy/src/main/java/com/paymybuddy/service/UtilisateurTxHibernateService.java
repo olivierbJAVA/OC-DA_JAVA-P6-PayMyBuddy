@@ -8,13 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.paymybuddy.entity.Compte;
-import com.paymybuddy.entity.Transaction;
 import com.paymybuddy.entity.Utilisateur;
-import com.paymybuddy.repository.CompteRepositoryJpaTxHibernateImpl;
 import com.paymybuddy.repository.ICompteRepository;
-import com.paymybuddy.repository.ITransactionRepository;
 import com.paymybuddy.repository.IUtilisateurRepository;
-import com.paymybuddy.repository.UtilisateurRepositoryJpaTxHibernateImpl;
 import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
 
 /**
@@ -28,16 +24,13 @@ public class UtilisateurTxHibernateService {
 
 	private IUtilisateurRepository utilisateurRepository;
 
-	private ITransactionRepository transactionRepository;
-	
 	private ICompteRepository compteRepository;
-	
+
 	public UtilisateurTxHibernateService(RepositoryTxManagerHibernate repositoryTxManager,
-			IUtilisateurRepository utilisateurRepository, ITransactionRepository transactionRepository, ICompteRepository compteRepository) {
+			IUtilisateurRepository utilisateurRepository, ICompteRepository compteRepository) {
 		super();
 		this.repositoryTxManager = repositoryTxManager;
 		this.utilisateurRepository = utilisateurRepository;
-		this.transactionRepository = transactionRepository;
 		this.compteRepository = compteRepository;
 	}
 
@@ -70,26 +63,35 @@ public class UtilisateurTxHibernateService {
 				utilisateurToCreate.setEmail(utilisateurEmail);
 				utilisateurToCreate.setPassword(password);
 				utilisateurToCreate.setSolde(0d);
-
+				/*
+				 * Set<Utilisateur> connection = new HashSet<>();
+				 * connection.add(utilisateurToCreate);
+				 * utilisateurToCreate.setConnection(connection);
+				 */
 				utilisateurRepository.create(utilisateurToCreate);
-				
-				// We create the PayMyBuddy account for the utilisateur 
+
+				// We create the PayMyBuddy account for the utilisateur
 				Compte paymybuddyAccount = new Compte();
-				paymybuddyAccount.setNumero(utilisateurEmail+"_PMB");
+				paymybuddyAccount.setNumero(utilisateurEmail + "_PMB");
 				paymybuddyAccount.setBanque("PayMyBuddy");
-				paymybuddyAccount.setType("PayMyBuddy");
+				paymybuddyAccount.setType("paymybuddy");
 				paymybuddyAccount.setUtilisateur(utilisateurToCreate);
-				
+
 				compteRepository.create(paymybuddyAccount);
 				/*
-				Set<Compte> utilisateurComptes = new HashSet<>();
-				utilisateurComptes.add(paymybuddyAccount);
-				*/
-				
-				// We add the PayMyBuddy account to  the utilisateur list of accounts
+				 * Set<Compte> utilisateurComptes = new HashSet<>();
+				 * utilisateurComptes.add(paymybuddyAccount);
+				 */
+
+				// We add the PayMyBuddy account to the utilisateur list of accounts
 				utilisateurRepository.addCompte(utilisateurToCreate, paymybuddyAccount);
-				
+
+				// utilisateurRepository.addConnection(utilisateurToCreate,
+				// utilisateurToCreate);
+
 				repositoryTxManager.commitTx();
+
+				addConnection(utilisateurToCreate.getEmail(), utilisateurToCreate.getEmail());
 
 				logger.info("Registration : Utilisateur {} registered", utilisateurEmail);
 
@@ -156,151 +158,6 @@ public class UtilisateurTxHibernateService {
 	}
 
 	/**
-	 * Method managing the wire by a user to his account for a certain amount.
-	 * 
-	 * @param utilisateurEmail The email of the user for which to perform the wire
-	 * 
-	 * @param montant          The amount of the wire
-	 * 
-	 * @return True if the wire has been successfully executed, false if it has
-	 *         failed
-	 */
-	public boolean wireToAccount(String utilisateurEmail, Double montant, String numeroCompte) {
-
-		boolean wireToAccountDone = false;
-
-		// We check that the amount to be wired is positive
-		if (montant <= 0) {
-			logger.error("Wire to account : Utilisateur {}, amount = {} must be positive", utilisateurEmail, montant);
-		} else {
-
-			try {
-				repositoryTxManager.openCurrentSessionWithTx();
-
-				Utilisateur utilisateurToUpdate = utilisateurRepository.read(utilisateurEmail);
-
-				// We check that the utilisateur with this email address is registered in the
-				// application
-				if (utilisateurToUpdate == null) {
-					logger.error("Wire to account : Utilisateur {} does not exist", utilisateurEmail);
-				} else {
-
-					Compte comptePaymybuddy = compteRepository.read(utilisateurEmail+"_PMB");
-					Compte compteBancaire = compteRepository.read(numeroCompte);
-					
-					// If all is ok, we update the utilisateur with a new solde being the old one
-					// plus the amount wired
-					Double oldSolde = utilisateurToUpdate.getSolde();
-					Double newSolde = oldSolde + montant;
-					utilisateurToUpdate.setSolde(newSolde);
-
-					utilisateurRepository.update(utilisateurToUpdate);
-					
-					// Finally we create the financial transaction in the database
-					Transaction transaction = new Transaction();
-					transaction.setInitiateur(utilisateurToUpdate);
-					transaction.setContrepartie(utilisateurToUpdate);
-					transaction.setMontant(montant);
-					transaction.setCommentaire("");
-					transaction.setType("virement");
-					transaction.setCompte_initiateur(compteBancaire);
-					transaction.setCompte_contrepartie(comptePaymybuddy);
-					
-					transactionRepository.create(transaction);
-					
-					repositoryTxManager.commitTx();
-
-					logger.info("Wire to account by Utilisateur {} for amount {} : done", utilisateurEmail, montant);
-
-					wireToAccountDone = true;
-				}
-			} catch (Exception e) {
-				logger.error("Wire to account : Error in Utilisateur {} wire to account", utilisateurEmail);
-
-				repositoryTxManager.rollbackTx();
-			} finally {
-
-				repositoryTxManager.closeCurrentSession();
-			}
-		}
-
-		return wireToAccountDone;
-	}
-
-	/**
-	 * Method managing the withdrawal by a user from his account for a certain
-	 * amount.
-	 * 
-	 * @param utilisateurEmail The email of the user for which to perform the
-	 *                         withdrawal
-	 * 
-	 * @param montant          The amount of the withdrawal
-	 * 
-	 * @return True if the withdrawal has been successfully executed, false if it
-	 *         has failed
-	 */
-	public boolean withdrawalFromAccount(String utilisateurEmail, Double montant) {
-
-		boolean withdrawalFromAccountDone = false;
-
-		// We check that the amount to be withdrawn is positive
-		if (montant <= 0) {
-			logger.error("Withdrawal from account : Utilisateur {}, amount = {} must be positive", utilisateurEmail,
-					montant);
-		} else {
-
-			try {
-				repositoryTxManager.openCurrentSessionWithTx();
-
-				Utilisateur utilisateurToUpdate = utilisateurRepository.read(utilisateurEmail);
-
-				// We check that the utilisateur with this email address is registered in the
-				// application
-				if (utilisateurToUpdate == null) {
-					logger.error("Withdrawal from account : Utilisateur {} does not exist", utilisateurEmail);
-				} else {
-
-					Double oldSolde = utilisateurToUpdate.getSolde();
-
-					// We check that the solde of the Utilisateur is sufficient to perform the
-					// withdrawal
-					if (oldSolde < montant) {
-						logger.error(
-								"Withdrawal from account : Utilisateur {} solde = {} not sufficient for amount = {}",
-								utilisateurEmail, oldSolde, montant);
-					} else {
-						// If all is ok, we update the utilisateur with a new solde being the old one
-						// minus the amount withdrawn
-						Double newSolde = oldSolde - montant;
-
-						utilisateurToUpdate.setSolde(newSolde);
-
-						utilisateurRepository.update(utilisateurToUpdate);
-
-						repositoryTxManager.commitTx();
-
-						logger.info("Withdrawal from account by Utilisateur {} for amount = {} done", utilisateurEmail,
-								montant);
-
-						withdrawalFromAccountDone = true;
-					}
-				}
-			} catch (Exception e) {
-				logger.error("Withdrawal from account : Error in Utilisateur {} withdrawal from account",
-						utilisateurEmail);
-
-				repositoryTxManager.rollbackTx();
-			} finally {
-
-				repositoryTxManager.closeCurrentSession();
-			}
-
-		}
-
-		return withdrawalFromAccountDone;
-	}
-
-	/**
 	 * Method managing the addition by a user of a new connection.
 	 * 
 	 * @param utilisateurEmail The email of the user for which to add a new
@@ -315,75 +172,67 @@ public class UtilisateurTxHibernateService {
 
 		boolean connectionAdded = false;
 
-		// We check that the utilisateur and the connection to add are not
-		// the same
-		if (utilisateurEmail.equals(connectionEmail)) {
-			logger.error("Add a connection : Utilisateur {} same as connection to add", utilisateurEmail);
-		} else {
+		try {
+			repositoryTxManager.openCurrentSessionWithTx();
 
-			try {
-				repositoryTxManager.openCurrentSessionWithTx();
+			Utilisateur utilisateurToAddConnection = utilisateurRepository.read(utilisateurEmail);
+			Utilisateur newConnection = utilisateurRepository.read(connectionEmail);
 
-				Utilisateur utilisateurToAddConnection = utilisateurRepository.read(utilisateurEmail);
-				Utilisateur newConnection = utilisateurRepository.read(connectionEmail);
+			// We check that the utilisateur to which add a connection is registered in the
+			// application
+			if (utilisateurToAddConnection == null) {
+				logger.error("Add a connection : Utilisateur {} does not exist", utilisateurEmail);
 
-				// We check that the utilisateur to which add a connection is registered in the
-				// application
-				if (utilisateurToAddConnection == null) {
-					logger.error("Add a connection : Utilisateur {} does not exist", utilisateurEmail);
+			// We check that the new connection is registered in the application
+			} else if (newConnection == null) {
+				logger.error("Add a connection : Connection {} does not exist", connectionEmail);
 
-				// We check that the new connection is registered in the application
-				} else if (newConnection == null) {
-					logger.error("Add a connection : Connection {} does not exist", connectionEmail);
+			} else {
+				Set<Utilisateur> utilisateurConnections = utilisateurToAddConnection.getConnection();
 
+				// We check that the utilisateur and the new connection are not already
+				// connected
+				if (utilisateurConnections != null && utilisateurConnections.contains(newConnection)) {
+					logger.error("Add a conection : Utilisateur {} has already Connection {}", utilisateurEmail,
+							connectionEmail);
+				// If all is ok, then we add the new connection to the utilisateur :
 				} else {
-					Set<Utilisateur> utilisateurConnections = utilisateurToAddConnection.getConnection();
-
-					// We check that the utilisateur and the new connection are not already
-					// connected
-					if (utilisateurConnections!=null && utilisateurConnections.contains(newConnection)) {
-						logger.error("Add a conection : Utilisateur {} has already Connection {}", utilisateurEmail,
-								connectionEmail);
-
-					// If all is ok, then we add the new connection to the utilisateur :
-					} else {
-						if (utilisateurConnections==null) {
-							utilisateurConnections = new HashSet<>();
-						}
-						utilisateurConnections.add(newConnection);
-						utilisateurToAddConnection.setConnection(utilisateurConnections);
-						utilisateurRepository.addConnection(utilisateurToAddConnection, newConnection);
-
-						repositoryTxManager.commitTx();
-
-						logger.info("Add a conection : Utilisateur {} Connection {} added", utilisateurEmail,
-								connectionEmail);
-
-						connectionAdded = true;
+					if (utilisateurConnections == null) {
+						utilisateurConnections = new HashSet<>();
 					}
+					utilisateurConnections.add(newConnection);
+					utilisateurToAddConnection.setConnection(utilisateurConnections);
+					utilisateurRepository.addConnection(utilisateurToAddConnection, newConnection);
+
+					repositoryTxManager.commitTx();
+
+					logger.info("Add a conection : Utilisateur {} Connection {} added", utilisateurEmail,
+							connectionEmail);
+
+					connectionAdded = true;
 				}
-			} catch (Exception e) {
-				logger.error("Add a connection : Error in Utilisateur {} add connection", utilisateurEmail);
-
-				repositoryTxManager.rollbackTx();
-			} finally {
-
-				repositoryTxManager.closeCurrentSession();
 			}
+		} catch (Exception e) {
+			logger.error("Add a connection : Error in Utilisateur {} add connection", utilisateurEmail);
+
+			repositoryTxManager.rollbackTx();
+		} finally {
+
+			repositoryTxManager.closeCurrentSession();
 		}
 
 		return connectionAdded;
 	}
-	
+
 	/**
 	 * Method managing the addition by a user of a new bank account.
 	 * 
-	 * @param utilisateurEmail The email of the user for which to add a new
-	 *                         bank account
+	 * @param utilisateurEmail The email of the user for which to add a new bank
+	 *                         account
 	 * 
-	 * @param numeroCompte  	The number of the bank account to add
+	 * @param numeroCompte     The number of the bank account to add
 	 * 
-	 * @param banque  	The bank of the bank account to add
+	 * @param banque           The bank of the bank account to add
 	 * 
 	 * @return True if the bank account add has been successfully executed, false if
 	 *         it has failed
@@ -392,56 +241,50 @@ public class UtilisateurTxHibernateService {
 
 		boolean compteAdded = false;
 
-			try {
-				repositoryTxManager.openCurrentSessionWithTx();
+		try {
+			repositoryTxManager.openCurrentSessionWithTx();
 
-				Utilisateur utilisateurToAddCompte = utilisateurRepository.read(utilisateurEmail);
+			Utilisateur utilisateurToAddCompte = utilisateurRepository.read(utilisateurEmail);
 
-				// We check that the utilisateur to which add a connection is registered in the
-				// application
-				if (utilisateurToAddCompte == null) {
-					logger.error("Add a bank account : Utilisateur {} does not exist", utilisateurEmail);
+			// We check that the utilisateur to which add the bank account is registered in
+			// the application
+			if (utilisateurToAddCompte == null) {
+				logger.error("Add a bank account : Utilisateur {} does not exist", utilisateurEmail);
 
-				} else {
-					//Set<Compte> utilisateurComptes = utilisateurToAddCompte.getCompte();
-					
-					// We create the bank account to add
-					Compte bankAccountToAdd = new Compte();
-					bankAccountToAdd.setNumero(numeroCompte);
-					bankAccountToAdd.setBanque(banque);
-					bankAccountToAdd.setType("bancaire");
-					bankAccountToAdd.setUtilisateur(utilisateurToAddCompte);
-					
-					
-					// We check that the utilisateur has not already the account
-					List<Compte> utilisateurComptes = compteRepository.getComptes(utilisateurEmail);	
-					if (utilisateurComptes.contains(bankAccountToAdd)) {
+			} else {
+				// We create the bank account to add
+				Compte bankAccountToAdd = new Compte();
+				bankAccountToAdd.setNumero(numeroCompte);
+				bankAccountToAdd.setBanque(banque);
+				bankAccountToAdd.setType("bancaire");
+				bankAccountToAdd.setUtilisateur(utilisateurToAddCompte);
+
+				// We check that the utilisateur has not already the account
+				List<Compte> utilisateurComptes = compteRepository.getComptes(utilisateurEmail);
+				if (utilisateurComptes.contains(bankAccountToAdd)) {
 					logger.error("Add a bank account : Utilisateur {} has already Compte {}", utilisateurEmail,
-								numeroCompte);
-					} else {
-					
-						// If all is ok, then we add the new account to the utilisateur :
-						compteRepository.create(bankAccountToAdd);
-									
-						// We add the PayMyBuddy account to  the utilisateur list of accounts
-						utilisateurRepository.addCompte(utilisateurToAddCompte, bankAccountToAdd);
-							
-						repositoryTxManager.commitTx();
+							numeroCompte);
+				} else {
 
-						logger.info("Add a bank account : Utilisateur {} Compte {} added", utilisateurEmail,
-								numeroCompte);
+					// We add the PayMyBuddy account to the utilisateur list of accounts
+					compteRepository.create(bankAccountToAdd);
+					utilisateurRepository.addCompte(utilisateurToAddCompte, bankAccountToAdd);
 
-						compteAdded = true;
-					}
-				}		
-			} catch (Exception e) {
-				logger.error("Add a bank account : Error in Utilisateur {} add bank account", utilisateurEmail);
+					repositoryTxManager.commitTx();
 
-				repositoryTxManager.rollbackTx();
-			} finally {
+					logger.info("Add a bank account : Utilisateur {} Compte {} added", utilisateurEmail, numeroCompte);
 
-				repositoryTxManager.closeCurrentSession();
+					compteAdded = true;
+				}
 			}
+		} catch (Exception e) {
+			logger.error("Add a bank account : Error in Utilisateur {} add bank account", utilisateurEmail);
+
+			repositoryTxManager.rollbackTx();
+		} finally {
+
+			repositoryTxManager.closeCurrentSession();
+		}
 
 		return compteAdded;
 	}

@@ -5,7 +5,6 @@ import java.util.List;
 import javax.persistence.TypedQuery;
 
 import com.paymybuddy.entity.Compte;
-import com.paymybuddy.entity.Transaction;
 import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
 
 /**
@@ -69,11 +68,11 @@ public class CompteRepositoryJpaTxHibernateImpl implements ICompteRepository {
 	}
 	
 	/**
-	 * Return all financial transactions performed by the user having this email.
+	 * Return all accounts for the user having this email.
 	 * 
-	 * @param email The email of the user to get financial transactions
+	 * @param emailUtilisateur The email of the user to get accounts
 	 * 
-	 * @return The list of all financial transactions for the user
+	 * @return The list of all accounts for the user
 	 */
 	@Override
 	public List<Compte> getComptes(String emailUtilisateur) {
@@ -85,4 +84,21 @@ public class CompteRepositoryJpaTxHibernateImpl implements ICompteRepository {
 		return query.setParameter("email", emailUtilisateur).getResultList();
 	}
 
+	/**
+	 * Return the paymybuddy account for the user having this email.
+	 * 
+	 * @param emailUtilisateur The email of the user to get accounts
+	 * 
+	 * @return The paymybuddy account for the user
+	 */
+	@Override
+	public Compte getPayMyBuddyCompte(String emailUtilisateur) {
+		String REQUEST_COMPTE_PMB = "SELECT c FROM Compte c WHERE c.utilisateur.email IN ( SELECT email FROM Utilisateur WHERE email = :email AND c.type='paymybuddy')";
+
+		TypedQuery<Compte> query = repositoryTxManager.getCurrentSession().createQuery(REQUEST_COMPTE_PMB,
+				Compte.class);
+
+		return query.setParameter("email", emailUtilisateur).getSingleResult();
+	}
+	
 }

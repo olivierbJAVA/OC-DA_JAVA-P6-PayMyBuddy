@@ -47,13 +47,13 @@ public class Demo {
 		ICompteRepository compteRepositoryImpl = RepositoryFactory.getCompteRepository(repositoryTxManager);	
 		
 		TransactionTxHibernateService transactionTxHibernateService = ServiceFactory.getTransactionService(repositoryTxManager,
-				utilisateurRepositoryImpl, transactionRepositoryImpl);
-		UtilisateurTxHibernateService utilisateurTxHibernateService = ServiceFactory.getUtilisateurService(repositoryTxManager,
 				utilisateurRepositoryImpl, transactionRepositoryImpl, compteRepositoryImpl);
+		UtilisateurTxHibernateService utilisateurTxHibernateService = ServiceFactory.getUtilisateurService(repositoryTxManager,
+				utilisateurRepositoryImpl, compteRepositoryImpl);
 		
 		
 //***** DEMO CAS OK **********************
-		
+
 		//S'enregistrer sur l'application
 		utilisateurTxHibernateService.registerToApplication("bertrand.simon@gmail.com", "bs");
 		
@@ -61,24 +61,27 @@ public class Demo {
 		utilisateurTxHibernateService.connectToApplication("bertrand.simon@gmail.com", "bs");
 		
 		// Ajouter un compte bancaire externe
-		utilisateurTxHibernateService.addCompte("bertrand.simon@gmail.com", "123SG", "SG");
-		utilisateurTxHibernateService.addCompte("bertrand.simon@gmail.com", "123SG", "SG");
-		
-		//Faire un virement sur son compte PayMyBuddy
-		utilisateurTxHibernateService.wireToAccount("bertrand.simon@gmail.com", 300d, "123SG");
+		utilisateurTxHibernateService.addCompte("bertrand.simon@gmail.com", "123SG", "Societe Generale");
+		utilisateurTxHibernateService.addCompte("bertrand.simon@gmail.com", "123SG", "Societe Generale");
 	
-		//Ajouter une connection
-		//utilisateurTxHibernateService.registerToApplication("matthieu.dupond@yahoo.fr", "md");
-		//utilisateurTxHibernateService.addConnection("bertrand.simon@gmail.com", "matthieu.dupond@yahoo.fr");
+		//Faire un dépot sur son compte PayMyBuddy
+		transactionTxHibernateService.depotSurComptePaymybuddy("bertrand.simon@gmail.com", 300d, "123SG", "Depot sur compte PayMyBuddy - Test ");
+	
+		//Faire un virement sur son compte PayMyBuddy
+		transactionTxHibernateService.virementSurCompteBancaire("bertrand.simon@gmail.com", 10d, "123SG", "Virement sur compte Bancaire - Test ");
 		
+		//Ajouter une connection
+		utilisateurTxHibernateService.registerToApplication("matthieu.dupond@yahoo.fr", "md");
+		utilisateurTxHibernateService.addConnection("bertrand.simon@gmail.com", "matthieu.dupond@yahoo.fr");
+			
 		//Faire un virement à la connection
-		//transactionTxHibernateService.makeATransaction("bertrand.simon@gmail.com", "matthieu.dupond@yahoo.fr", 100d, "Demo transaction");
+		transactionTxHibernateService.transfertCompteACompte("bertrand.simon@gmail.com", "matthieu.dupond@yahoo.fr", 100d, "Transfert compte à compte - Test");
 
 		
 //***** DEMO CAS NOK **********************
 		
 		//S'enregistrer sur l'application (utilisateur existe déjà)
-		//utilisateurTxHibernateService.registerToApplication("bertrand.simon@gmail.com", "bs");
+		utilisateurTxHibernateService.registerToApplication("bertrand.simon@gmail.com", "bs");
 		
 		//Se connecter à l'application (mauvais mot de passe)
 		//utilisateurTxHibernateService.connectToApplication("bertrand.simon@gmail.com", "MAUVAIS_MOT_DE_PASSE");

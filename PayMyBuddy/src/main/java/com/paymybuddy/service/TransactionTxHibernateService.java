@@ -7,8 +7,10 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.paymybuddy.entity.Compte;
 import com.paymybuddy.entity.Transaction;
 import com.paymybuddy.entity.Utilisateur;
+import com.paymybuddy.repository.ICompteRepository;
 import com.paymybuddy.repository.ITransactionRepository;
 import com.paymybuddy.repository.IUtilisateurRepository;
 import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
@@ -27,11 +29,15 @@ public class TransactionTxHibernateService {
 
 	private ITransactionRepository transactionRepository;
 
+	private ICompteRepository compteRepository;
+
 	public TransactionTxHibernateService(RepositoryTxManagerHibernate repositoryTxManager,
-			IUtilisateurRepository utilisateurRepository, ITransactionRepository transactionRepository) {
+			IUtilisateurRepository utilisateurRepository, ITransactionRepository transactionRepository,
+			ICompteRepository compteRepository) {
 		this.repositoryTxManager = repositoryTxManager;
 		this.utilisateurRepository = utilisateurRepository;
 		this.transactionRepository = transactionRepository;
+		this.compteRepository = compteRepository;
 	}
 
 	/**
@@ -73,19 +79,20 @@ public class TransactionTxHibernateService {
 	}
 
 	/**
-	 * Method making a financial transaction between an initiator user and a
+	 * Method making an internal transfert between an initiator user and a
 	 * counterpart user for a certain amount.
 	 * 
 	 * @param initiateurEmail   The email of the initiator of the transaction
 	 * 
 	 * @param contrepartieEmail The email of the counterpart of the transaction
 	 * 
-	 * @return True if the transaction has been successfully executed, false if it
-	 *         has failed
+	 * @return True if the transfert has been successfully executed, false if it has
+	 *         failed
 	 */
-	public boolean makeATransaction(String initiateurEmail, String contrepartieEmail, Double montant, String commentaire) {
+	public boolean transfertCompteACompte(String initiateurEmail, String contrepartieEmail, Double montant,
+			String commentaire) {
 
-		boolean transactionDone = false;
+		boolean transfertCompteACompteDone = false;
 
 		// We check that the initiateur and the contrepartie of the transaction are not
 		// the same
@@ -149,7 +156,12 @@ public class TransactionTxHibernateService {
 						transaction.setContrepartie(connection);
 						transaction.setMontant(montant);
 						transaction.setCommentaire(commentaire);
-						
+						transaction.setCompte_initiateur(compteRepository.getPayMyBuddyCompte(initiateurEmail));
+						transaction.setCompte_contrepartie(compteRepository.getPayMyBuddyCompte(contrepartieEmail));
+						transaction.setType("transfert");
+						double fraisTransaction = montant * 0.005;
+						transaction.setFrais(fraisTransaction);
+
 						transactionRepository.create(transaction);
 
 						repositoryTxManager.commitTx();
@@ -158,7 +170,7 @@ public class TransactionTxHibernateService {
 								"Transaction made by Utilisateur initiateur {} to Utilisateur contrepartie {} for amount = {} : done",
 								initiateurEmail, contrepartieEmail, montant);
 
-						transactionDone = true;
+						transfertCompteACompteDone = true;
 					}
 				}
 			} catch (Exception e) {
@@ -171,6 +183,178 @@ public class TransactionTxHibernateService {
 			}
 		}
 
-		return transactionDone;
+		return transfertCompteACompteDone;
+	}
+
+	/**
+	 * Method managing the wire by a user from a bank account to the paymybuddy
+	 * account for a certain amount.
+	 * 
+	 * @param utilisateurEmail The email of the user for which to perform the wire
+	 * 
+	 * @param montant          The amount of the wire
+	 * 
+	 * @param numeroCompte     The bank account number
+	 * 
+	 * @param commentaire      An optional comment
+	 * 
+	 * @return True if the wire has been successfully executed, false if it has
+	 *         failed
+	 */
+	public boolean depotSurComptePaymybuddy(String utilisateurEmail, Double montant, String numeroCompte,
+			String commentaire) {
+
+		boolean depotSurComptePaymybuddyDone = false;
+
+		// We check that the amount to be wired is positive
+		if (montant <= 0) {
+			logger.error("Wire to account : Utilisateur {}, amount = {} must be positive", utilisateurEmail, montant);
+		} else {
+
+			try {
+				repositoryTxManager.openCurrentSessionWithTx();
+
+				Utilisateur utilisateurToUpdate = utilisateurRepository.read(utilisateurEmail);
+
+				// We check that the utilisateur with this email address is registered in the
+				// application
+				if (utilisateurToUpdate == null) {
+					logger.error("Wire to account : Utilisateur {} does not exist", utilisateurEmail);
+				} else {
+
+					Compte comptePaymybuddy = compteRepository.read(utilisateurEmail + "_PMB");
+					Compte compteBancaire = compteRepository.read(numeroCompte);
+
+					// If all is ok, we update the utilisateur with a new solde being the old one
+					// plus the amount wired
+					Double oldSolde = utilisateurToUpdate.getSolde();
+					Double newSolde = oldSolde + montant;
+					utilisateurToUpdate.setSolde(newSolde);
+
+					utilisateurRepository.update(utilisateurToUpdate);
+
+					// Finally we create the financial transaction in the database
+					Transaction transaction = new Transaction();
+					transaction.setInitiateur(utilisateurToUpdate);
+					transaction.setContrepartie(utilisateurToUpdate);
+					transaction.setMontant(montant);
+					transaction.setCommentaire(commentaire);
+					transaction.setType("depot");
+					transaction.setCompte_initiateur(compteBancaire);
+					transaction.setCompte_contrepartie(comptePaymybuddy);
+
+					transactionRepository.create(transaction);
+
+					repositoryTxManager.commitTx();
+
+					logger.info("Wire to account by Utilisateur {} for amount {} : done", utilisateurEmail, montant);
+
+					depotSurComptePaymybuddyDone = true;
+				}
+			} catch (Exception e) {
+				logger.error("Wire to account : Error in Utilisateur {} wire to account", utilisateurEmail);
+
+				repositoryTxManager.rollbackTx();
+			} finally {
+
+				repositoryTxManager.closeCurrentSession();
+			}
+		}
+
+		return depotSurComptePaymybuddyDone;
+	}
+
+	/**
+	 * Method managing the withdrawal by a user from his paymybuddy account to a
+	 * bank account for a certain amount.
+	 * 
+	 * @param utilisateurEmail The email of the user for which to perform the
+	 *                         withdrawal
+	 * 
+	 * @param montant          The amount of the withdrawal
+	 * 
+	 * @param numeroCompte     The bank account number
+	 * 
+	 * @param commentaire      An optional comment
+	 * 
+	 * @return True if the withdrawal has been successfully executed, false if it
+	 *         has failed
+	 */
+	public boolean virementSurCompteBancaire(String utilisateurEmail, Double montant, String numeroCompte,
+			String commentaire) {
+
+		boolean virementSurCompteBancaireDone = false;
+
+		// We check that the amount to be withdrawn is positive
+		if (montant <= 0) {
+			logger.error("Withdrawal from account : Utilisateur {}, amount = {} must be positive", utilisateurEmail,
+					montant);
+		} else {
+
+			try {
+				repositoryTxManager.openCurrentSessionWithTx();
+
+				Utilisateur utilisateurToUpdate = utilisateurRepository.read(utilisateurEmail);
+
+				// We check that the utilisateur with this email address is registered in the
+				// application
+				if (utilisateurToUpdate == null) {
+					logger.error("Withdrawal from account : Utilisateur {} does not exist", utilisateurEmail);
+				} else {
+
+					Double oldSolde = utilisateurToUpdate.getSolde();
+
+					// We check that the solde of the Utilisateur is sufficient to perform the
+					// withdrawal
+					if (oldSolde < montant) {
+						logger.error(
+								"Withdrawal from account : Utilisateur {} solde = {} not sufficient for amount = {}",
+								utilisateurEmail, oldSolde, montant);
+					} else {
+
+						Compte comptePaymybuddy = compteRepository.read(utilisateurEmail + "_PMB");
+						Compte compteBancaire = compteRepository.read(numeroCompte);
+
+						// If all is ok, we update the utilisateur with a new solde being the old one
+						// minus the amount withdrawn
+						Double newSolde = oldSolde - montant;
+
+						utilisateurToUpdate.setSolde(newSolde);
+
+						utilisateurRepository.update(utilisateurToUpdate);
+
+						// Finally we create the financial transaction in the database
+						Transaction transaction = new Transaction();
+						transaction.setInitiateur(utilisateurToUpdate);
+						transaction.setContrepartie(utilisateurToUpdate);
+						transaction.setMontant(montant);
+						transaction.setCommentaire(commentaire);
+						transaction.setType("virement");
+						transaction.setCompte_initiateur(compteBancaire);
+						transaction.setCompte_contrepartie(comptePaymybuddy);
+
+						transactionRepository.create(transaction);
+
+						repositoryTxManager.commitTx();
+
+						logger.info("Withdrawal from account by Utilisateur {} for amount = {} done", utilisateurEmail,
+								montant);
+
+						virementSurCompteBancaireDone = true;
+					}
+				}
+			} catch (Exception e) {
+				logger.error("Withdrawal from account : Error in Utilisateur {} withdrawal from account",
+						utilisateurEmail);
+
+				repositoryTxManager.rollbackTx();
+			} finally {
+
+				repositoryTxManager.closeCurrentSession();
+			}
+
+		}
+
+		return virementSurCompteBancaireDone;
 	}
 }
