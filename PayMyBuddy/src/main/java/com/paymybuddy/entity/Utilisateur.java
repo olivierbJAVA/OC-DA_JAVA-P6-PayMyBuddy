@@ -31,7 +31,7 @@ public class Utilisateur implements Serializable {
 	@JoinTable(name = "utilisateur_connection", joinColumns = @JoinColumn(name = "utilisateur_email"), inverseJoinColumns = @JoinColumn(name = "utilisateur_connection_email", nullable = true))
 	private Set<Utilisateur> connection;
 
-	@OneToMany
+	@OneToMany(mappedBy="utilisateur")
 	private Set<Compte> compte;
 
 	public Utilisateur() {
