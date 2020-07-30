@@ -19,8 +19,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.paymybuddy.entity.Compte;
 import com.paymybuddy.entity.Utilisateur;
 import com.paymybuddy.factory.ServiceFactory;
+import com.paymybuddy.repository.ICompteRepository;
 import com.paymybuddy.repository.IUtilisateurRepository;
 import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
 import com.paymybuddy.service.UtilisateurTxHibernateService;
@@ -37,13 +39,16 @@ public class UtilisateurTxHibernateServiceTest {
 	@Mock
 	private IUtilisateurRepository utilisateurRepositoryMock;
 
+	@Mock
+	private ICompteRepository compteRepositoryMock;
+	
 	private UtilisateurTxHibernateService utilisateurTxHibernateServiceUnderTest;
 
 	@BeforeEach
 	private void setUpPerTest() {
 		ServiceFactory.resetUtilisateurService();
 		utilisateurTxHibernateServiceUnderTest = ServiceFactory.getUtilisateurService(repositoryTxManagerMock,
-				utilisateurRepositoryMock);
+				utilisateurRepositoryMock, compteRepositoryMock);
 	}
 
 	@Test
@@ -58,6 +63,8 @@ public class UtilisateurTxHibernateServiceTest {
 		
 		when(utilisateurRepositoryMock.read("abc@test.com")).thenReturn(null);
 		
+		doNothing().when(compteRepositoryMock).create(any(Compte.class));
+		
 		doNothing().when(repositoryTxManagerMock).commitTx();
 
 		// ACT
@@ -65,7 +72,7 @@ public class UtilisateurTxHibernateServiceTest {
 
 		// ASSERT
 		assertTrue(result);
-		verify(utilisateurRepositoryMock, times(1)).create(utilisateurToRegister);
+		verify(utilisateurRepositoryMock, times(1)).create(any(Utilisateur.class));
 	}
 
 	@Test
@@ -140,124 +147,6 @@ public class UtilisateurTxHibernateServiceTest {
 
 		// ASSERT
 		assertFalse(result);
-	}
-
-	@Test
-	public void withdrawalFromAccount_whenUtilisateurExistAndSoldeSufficientAndAmountPositive() {
-		// ARRANGE
-		Utilisateur utilisateurToWithdrawFromAccount = new Utilisateur();
-		utilisateurToWithdrawFromAccount.setEmail("abc@test.com");
-		utilisateurToWithdrawFromAccount.setPassword("abc");
-		utilisateurToWithdrawFromAccount.setSolde(123d);
-
-		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
-		
-		when(utilisateurRepositoryMock.read("abc@test.com")).thenReturn(utilisateurToWithdrawFromAccount);
-
-		doNothing().when(repositoryTxManagerMock).commitTx();
-		
-		// ACT
-		boolean result = utilisateurTxHibernateServiceUnderTest.withdrawalFromAccount("abc@test.com", 10d);
-
-		// ASSERT
-		assertTrue(result);
-		verify(utilisateurRepositoryMock, times(1)).update(utilisateurToWithdrawFromAccount);
-	}
-
-	@Test
-	public void withdrawalFromAccount_whenAmountNegative() {
-		// ARRANGE
-
-		// ACT
-		boolean result = utilisateurTxHibernateServiceUnderTest.withdrawalFromAccount("abc@test.com", -10d);
-
-		// ASSERT
-		assertFalse(result);
-		verify(utilisateurRepositoryMock, never()).update(any(Utilisateur.class));
-	}
-
-	@Test
-	public void withdrawalFromAccount_whenUtilisateurExistAndSoldeNotSufficient() {
-		// ARRANGE
-		Utilisateur utilisateurToWithdrawFromAccount = new Utilisateur();
-		utilisateurToWithdrawFromAccount.setEmail("abc@test.com");
-		utilisateurToWithdrawFromAccount.setPassword("abc");
-		utilisateurToWithdrawFromAccount.setSolde(1d);
-
-		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
-		
-		when(utilisateurRepositoryMock.read("abc@test.com")).thenReturn(utilisateurToWithdrawFromAccount);
-
-		// ACT
-		boolean result = utilisateurTxHibernateServiceUnderTest.withdrawalFromAccount("abc@test.com", 10d);
-
-		// ASSERT
-		assertFalse(result);
-		verify(utilisateurRepositoryMock, never()).update(utilisateurToWithdrawFromAccount);
-	}
-
-	@Test
-	public void withdrawalFromAccount_whenUtilisateurNotExist() {
-		// ARRANGE
-		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
-		
-		when(utilisateurRepositoryMock.read("abc@test.com")).thenReturn(null);
-
-		// ACT
-		boolean result = utilisateurTxHibernateServiceUnderTest.withdrawalFromAccount("abc@test.com", 10d);
-
-		// ASSERT
-		assertFalse(result);
-		verify(utilisateurRepositoryMock, never()).update(any(Utilisateur.class));
-	}
-
-	@Test
-	public void wireToAccount_whenUtilisateurExistAndAmountPositive() {
-		// ARRANGE
-		Utilisateur utilisateurToWireToAccount = new Utilisateur();
-		utilisateurToWireToAccount.setEmail("abc@test.com");
-		utilisateurToWireToAccount.setPassword("abc");
-		utilisateurToWireToAccount.setSolde(123d);
-
-		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
-		
-		when(utilisateurRepositoryMock.read("abc@test.com")).thenReturn(utilisateurToWireToAccount);
-	
-		doNothing().when(repositoryTxManagerMock).commitTx();
-		
-		// ACT
-		boolean result = utilisateurTxHibernateServiceUnderTest.wireToAccount("abc@test.com", 10d);
-
-		// ASSERT
-		assertTrue(result);
-		verify(utilisateurRepositoryMock, times(1)).update(utilisateurToWireToAccount);
-	}
-
-	@Test
-	public void wireToAccount_whenAmountNegative() {
-		// ARRANGE
-
-		// ACT
-		boolean result = utilisateurTxHibernateServiceUnderTest.wireToAccount("abc@test.com", -10d);
-
-		// ASSERT
-		assertFalse(result);
-		verify(utilisateurRepositoryMock, never()).update(any(Utilisateur.class));
-	}
-
-	@Test
-	public void wireToAccount_whenUtilisateurNotExist() {
-		// ARRANGE
-		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
-		
-		when(utilisateurRepositoryMock.read("abc@test.com")).thenReturn(null);
-
-		// ACT
-		boolean result = utilisateurTxHibernateServiceUnderTest.wireToAccount("abc@test.com", 10d);
-
-		// ASSERT
-		assertFalse(result);
-		verify(utilisateurRepositoryMock, never()).update(any(Utilisateur.class));
 	}
 
 	@Test
@@ -362,16 +251,4 @@ public class UtilisateurTxHibernateServiceTest {
 		verify(utilisateurRepositoryMock, never()).addConnection(any(Utilisateur.class), any(Utilisateur.class));
 	}
 
-	@Test
-	public void addConnection_whenUtilisateurAndConnectionAreSame() {
-		// ARRANGE
-
-		// ACT
-		boolean result = utilisateurTxHibernateServiceUnderTest.addConnection("utilisateurSameAsConnectionToAdd",
-				"utilisateurSameAsConnectionToAdd");
-
-		// ASSERT
-		assertFalse(result);
-		verify(utilisateurRepositoryMock, never()).addConnection(any(Utilisateur.class), any(Utilisateur.class));
-	}
 }
