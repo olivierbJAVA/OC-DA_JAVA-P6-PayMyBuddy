@@ -14,7 +14,7 @@ import com.paymybuddy.service.TransactionTxHibernateService;
 import com.paymybuddy.service.UtilisateurTxHibernateService;
 
 /**
- * Class including tests for demo.
+ * Class including demo.
  */
 public class Demo {
 
@@ -54,26 +54,26 @@ public class Demo {
 		
 //***** DEMO WORKFLOW PAYMYBUDDY **********************
 
-		//S'enregistrer sur l'application
+		// S'enregistrer sur l'application
 		utilisateurTxHibernateService.registerToApplication("bertrand.simon@gmail.com", "bs");
 		
-		//Se connecter à l'application
+		// Se connecter à l'application
 		utilisateurTxHibernateService.connectToApplication("bertrand.simon@gmail.com", "bs");
 		
 		// Ajouter un compte bancaire externe
 		utilisateurTxHibernateService.addCompte("bertrand.simon@gmail.com", "123SG", "Societe Generale");
 	
-		//Faire un dépot sur son compte PayMyBuddy
+		// Faire un dépot du compte bancaire ajouté sur compte PayMyBuddy
 		transactionTxHibernateService.depotSurComptePaymybuddy("bertrand.simon@gmail.com", 300d, "123SG", "Depot sur compte PayMyBuddy - Test ");
 	
-		//Faire un virement sur son compte PayMyBuddy
+		// Faire un virement de compte PayMyBuddy vers le compte bancaire ajouté
 		transactionTxHibernateService.virementSurCompteBancaire("bertrand.simon@gmail.com", 10d, "123SG", "Virement sur compte Bancaire - Test ");
 		
-		//Ajouter une connection
+		// Ajouter une connection
 		utilisateurTxHibernateService.registerToApplication("matthieu.dupond@yahoo.fr", "md");
 		utilisateurTxHibernateService.addConnection("bertrand.simon@gmail.com", "matthieu.dupond@yahoo.fr");
 			
-		//Faire un virement à la connection
+		//Faire un transfert à la connection ajoutée
 		transactionTxHibernateService.transfertCompteACompte("bertrand.simon@gmail.com", "matthieu.dupond@yahoo.fr", 100d, "Transfert compte à compte - Test");
 	}
 
