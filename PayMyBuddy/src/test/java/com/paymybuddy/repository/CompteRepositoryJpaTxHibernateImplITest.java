@@ -4,9 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +21,7 @@ import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
 
 /**
  * Class including integration (with the database) tests for the
- * UtilisateurRepositoryJpaTxHibernateImpl Class.
+ * CompteRepositoryJpaTxHibernateImpl Class.
  */
 public class CompteRepositoryJpaTxHibernateImplITest {
 
@@ -199,136 +196,4 @@ public class CompteRepositoryJpaTxHibernateImplITest {
 		// ACT & ASSERT
 		assertNull(compteRepositoryImplUnderTest.read("CompteNotExist"));
 	}
-/*
-	@Test
-	public void addAConnection_whenNoExistingConnection() {
-		// ARRANGE
-		Utilisateur utilisateurToAddConnection = new Utilisateur();
-		utilisateurToAddConnection.setEmail("abc@test.com");
-		utilisateurToAddConnection.setPassword("abc");
-		utilisateurToAddConnection.setSolde(123d);
-
-		utilisateurRepositoryImplUnderTest.create(utilisateurToAddConnection);
-
-		Utilisateur utilisateurNewConnection = new Utilisateur();
-		utilisateurNewConnection.setEmail("def@test.com");
-		utilisateurNewConnection.setPassword("def");
-		utilisateurNewConnection.setSolde(456d);
-
-		utilisateurRepositoryImplUnderTest.create(utilisateurNewConnection);
-
-		Set<Utilisateur> connections = new HashSet<>();
-		connections.add(utilisateurNewConnection);
-		utilisateurToAddConnection.setConnection(connections);
-
-		// ACT
-		utilisateurRepositoryImplUnderTest.addConnection(utilisateurToAddConnection, utilisateurNewConnection);
-		repositoryTxManager.commitTx();
-
-		// ASSERT
-		Utilisateur utilisateurConnectionAdded = utilisateurRepositoryImplUnderTest
-				.read(utilisateurToAddConnection.getEmail());
-		Set<Utilisateur> connectionsUtilisateur = utilisateurConnectionAdded.getConnection();
-		Utilisateur connectionAdded = connectionsUtilisateur.iterator().next();
-
-		assertEquals(utilisateurNewConnection.getEmail(), connectionAdded.getEmail());
-		assertEquals(utilisateurNewConnection.getPassword(), connectionAdded.getPassword());
-		assertEquals(utilisateurNewConnection.getSolde(), connectionAdded.getSolde());
-	}
-
-	@Test
-	public void addAConnection_whenExistingConnection() {
-		// ARRANGE
-		Utilisateur utilisateurToAddConnection = new Utilisateur();
-		utilisateurToAddConnection.setEmail("abc@test.com");
-		utilisateurToAddConnection.setPassword("abc");
-		utilisateurToAddConnection.setSolde(123d);
-
-		Utilisateur utilisateurExistingConnection = new Utilisateur();
-		utilisateurExistingConnection.setEmail("def@test.com");
-		utilisateurExistingConnection.setPassword("def");
-		utilisateurExistingConnection.setSolde(456d);
-
-		utilisateurRepositoryImplUnderTest.create(utilisateurExistingConnection);
-
-		Set<Utilisateur> connections = new HashSet<>();
-		connections.add(utilisateurExistingConnection);
-		utilisateurToAddConnection.setConnection(connections);
-
-		utilisateurRepositoryImplUnderTest.create(utilisateurToAddConnection);
-
-		utilisateurRepositoryImplUnderTest.addConnection(utilisateurToAddConnection, utilisateurExistingConnection);
-		;
-
-		Utilisateur utilisateurNewConnection = new Utilisateur();
-		utilisateurNewConnection.setEmail("ghi@test.com");
-		utilisateurNewConnection.setPassword("ghi");
-		utilisateurNewConnection.setSolde(789d);
-
-		utilisateurRepositoryImplUnderTest.create(utilisateurNewConnection);
-
-		connections.add(utilisateurNewConnection);
-		utilisateurToAddConnection.setConnection(connections);
-
-		// ACT
-		utilisateurRepositoryImplUnderTest.addConnection(utilisateurToAddConnection, utilisateurNewConnection);
-		;
-		repositoryTxManager.commitTx();
-
-		// ASSERT
-		Utilisateur utilisateurConnectionAdded = utilisateurRepositoryImplUnderTest
-				.read(utilisateurToAddConnection.getEmail());
-		Set<Utilisateur> connectionsUtilisateur = utilisateurConnectionAdded.getConnection();
-		Utilisateur connectionAdded = null;
-		for (Utilisateur connection : connectionsUtilisateur) {
-			if (connection.getEmail().equals(utilisateurNewConnection.getEmail())) {
-				connectionAdded = connection;
-			}
-		}
-
-		assertEquals(utilisateurNewConnection.getEmail(), connectionAdded.getEmail());
-		assertEquals(utilisateurNewConnection.getPassword(), connectionAdded.getPassword());
-		assertEquals(utilisateurNewConnection.getSolde(), connectionAdded.getSolde());
-	}
-
-	@Test
-	public void addAConnection_whenConnectionAlreadyExisting() {
-		// ARRANGE
-		Utilisateur utilisateurToAddConnection = new Utilisateur();
-		utilisateurToAddConnection.setEmail("abc@test.com");
-		utilisateurToAddConnection.setPassword("abc");
-		utilisateurToAddConnection.setSolde(123d);
-
-		Utilisateur utilisateurExistingConnection = new Utilisateur();
-		utilisateurExistingConnection.setEmail("def@test.com");
-		utilisateurExistingConnection.setPassword("def");
-		utilisateurExistingConnection.setSolde(456d);
-
-		utilisateurRepositoryImplUnderTest.create(utilisateurExistingConnection);
-
-		Set<Utilisateur> connections = new HashSet<>();
-		connections.add(utilisateurExistingConnection);
-		utilisateurToAddConnection.setConnection(connections);
-
-		utilisateurRepositoryImplUnderTest.create(utilisateurToAddConnection);
-
-		utilisateurRepositoryImplUnderTest.addConnection(utilisateurToAddConnection, utilisateurExistingConnection);
-
-		// ACT
-		utilisateurRepositoryImplUnderTest.addConnection(utilisateurToAddConnection, utilisateurExistingConnection);
-		repositoryTxManager.commitTx();
-
-		// ASSERT
-		Utilisateur utilisateurConnectionAdded = utilisateurRepositoryImplUnderTest
-				.read(utilisateurToAddConnection.getEmail());
-		Set<Utilisateur> connectionsUtilisateur = utilisateurConnectionAdded.getConnection();
-		Utilisateur connectionAdded = connectionsUtilisateur.iterator().next();
-
-		assertEquals(1, connectionsUtilisateur.size());
-
-		assertEquals(utilisateurExistingConnection.getEmail(), connectionAdded.getEmail());
-		assertEquals(utilisateurExistingConnection.getPassword(), connectionAdded.getPassword());
-		assertEquals(utilisateurExistingConnection.getSolde(), connectionAdded.getSolde());
-	}
-*/
 }

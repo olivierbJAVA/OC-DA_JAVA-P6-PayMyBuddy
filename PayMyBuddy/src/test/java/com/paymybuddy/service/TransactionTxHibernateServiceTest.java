@@ -24,7 +24,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.paymybuddy.entity.Compte;
 import com.paymybuddy.entity.Transaction;
 import com.paymybuddy.entity.Utilisateur;
 import com.paymybuddy.factory.ServiceFactory;
@@ -176,69 +175,9 @@ public class TransactionTxHibernateServiceTest {
 		assertTrue(transactionsGet.isEmpty());
 		verify(transactionRepositoryMock, never()).getTransactions(anyString());
 	}
-/*
+
 	@Test
-	public void makeATransactionWhenAmountIsPositiveAndInitiateurAndContrepartieExistAndAreConnectedAndSoldeSufficient() {
-		// ARRANGE
-		Utilisateur initiateur = new Utilisateur();
-		initiateur.setEmail("abc@test.com");
-		initiateur.setPassword("abc");
-		initiateur.setSolde(123d);
-
-		Compte compteInitiateur = new Compte();
-		compteInitiateur.setNumero("abc@test.com_PMB");
-		compteInitiateur.setBanque("PayMyBuddy");
-		compteInitiateur.setType("paymybuddy");
-		
-		Utilisateur contrepartie = new Utilisateur();
-		contrepartie.setEmail("def@test.com");
-		contrepartie.setPassword("def");
-		contrepartie.setSolde(0d);
-
-		Compte compteContrepartie = new Compte();
-		compteInitiateur.setNumero("def@test.com_PMB");
-		compteInitiateur.setBanque("PayMyBuddy");
-		compteInitiateur.setType("paymybuddy");
-		
-		Set<Utilisateur> connections = new HashSet<>();
-		connections.add(contrepartie);
-		initiateur.setConnection(connections);
-
-		Transaction transaction = new Transaction();
-		transaction.setInitiateur(initiateur);
-		transaction.setContrepartie(contrepartie);
-		transaction.setMontant(1d);
-		transaction.setCommentaire("Transaction test");
-		transaction.setCompte_initiateur(compteInitiateur);
-		transaction.setCompte_contrepartie(compteContrepartie);
-		transaction.setType("transfert");
-		
-		doReturn(initiateur).when(utilisateurRepositoryMock).read("abc@test.com");
-
-		doReturn(contrepartie).when(utilisateurRepositoryMock).read("def@test.com");
-
-		doNothing().when(utilisateurRepositoryMock).update(initiateur);
-
-		doNothing().when(utilisateurRepositoryMock).update(contrepartie);
-
-		when(transactionRepositoryMock.create(transaction)).thenReturn(transaction);
-
-		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
-
-		doNothing().when(repositoryTxManagerMock).commitTx();
-
-		// ACT
-		boolean result = transactionTxHibernateServiceUnderTest.transfertCompteACompte("abc@test.com", "def@test.com", 10d,
-				"Transaction test");
-
-		// ASSERT
-		assertTrue(result);
-		verify(utilisateurRepositoryMock, times(2)).update(any(Utilisateur.class));
-		verify(transactionRepositoryMock, times(1)).create(transaction);
-	}
-*/
-	@Test
-	public void makeATransactionWhenAmountIsNegative() {
+	public void transfertCompteACompteWhenAmountIsNegative() {
 		// ARRANGE
 
 		// ACT
@@ -252,7 +191,7 @@ public class TransactionTxHibernateServiceTest {
 	}
 
 	@Test
-	public void makeATransactionWhenInitiateurNotExist() {
+	public void transfertCompteACompteWhenInitiateurNotExist() {
 		// ARRANGE
 		doReturn(null).when(utilisateurRepositoryMock).read("UtilisateurNotExist");
 
@@ -276,7 +215,7 @@ public class TransactionTxHibernateServiceTest {
 	}
 
 	@Test
-	public void makeATransactionWhenInitiateurExistAndContrepartieNotExist() {
+	public void transfertCompteACompteWhenInitiateurExistAndContrepartieNotExist() {
 		// ARRANGE
 		Utilisateur initiateur = new Utilisateur();
 		initiateur.setEmail("abc@test.com");
@@ -300,7 +239,7 @@ public class TransactionTxHibernateServiceTest {
 	}
 
 	@Test
-	public void makeATransactionWhenInitiateurAndContrepartieExistAndAreNotConnected() {
+	public void transfertCompteACompteWhenInitiateurAndContrepartieExistAndAreNotConnected() {
 		// ARRANGE
 		Utilisateur initiateur = new Utilisateur();
 		initiateur.setEmail("abc@test.com");
@@ -329,7 +268,7 @@ public class TransactionTxHibernateServiceTest {
 	}
 
 	@Test
-	public void makeATransactionWhenInitiateurAndContrepartieExistAndAreConnectedAndSoldeNotSufficient() {
+	public void transfertCompteACompteWhenInitiateurAndContrepartieExistAndAreConnectedAndSoldeNotSufficient() {
 		// ARRANGE
 		Utilisateur initiateur = new Utilisateur();
 		initiateur.setEmail("abc@test.com");
@@ -362,7 +301,7 @@ public class TransactionTxHibernateServiceTest {
 	}
 
 	@Test
-	public void withdrawalFromAccount_whenUtilisateurExistAndSoldeSufficientAndAmountPositive() {
+	public void virementSurCompteBancaireWhenUtilisateurExistAndSoldeSufficientAndAmountPositive() {
 		// ARRANGE
 		Utilisateur utilisateurToWithdrawFromAccount = new Utilisateur();
 		utilisateurToWithdrawFromAccount.setEmail("abc@test.com");
@@ -384,7 +323,7 @@ public class TransactionTxHibernateServiceTest {
 	}
 
 	@Test
-	public void withdrawalFromAccount_whenAmountNegative() {
+	public void virementSurCompteBancaireWhenAmountNegative() {
 		// ARRANGE
 
 		// ACT
@@ -396,7 +335,7 @@ public class TransactionTxHibernateServiceTest {
 	}
 
 	@Test
-	public void withdrawalFromAccount_whenUtilisateurExistAndSoldeNotSufficient() {
+	public void virementSurCompteBancaireWhenUtilisateurExistAndSoldeNotSufficient() {
 		// ARRANGE
 		Utilisateur utilisateurToWithdrawFromAccount = new Utilisateur();
 		utilisateurToWithdrawFromAccount.setEmail("abc@test.com");
@@ -416,7 +355,7 @@ public class TransactionTxHibernateServiceTest {
 	}
 
 	@Test
-	public void withdrawalFromAccount_whenUtilisateurNotExist() {
+	public void virementSurCompteBancaireWhenUtilisateurNotExist() {
 		// ARRANGE
 		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
 		
@@ -431,7 +370,7 @@ public class TransactionTxHibernateServiceTest {
 	}
 
 	@Test
-	public void wireToAccount_whenUtilisateurExistAndAmountPositive() {
+	public void depotSurComptePaymybuddyWhenUtilisateurExistAndAmountPositive() {
 		// ARRANGE
 		Utilisateur utilisateurToWireToAccount = new Utilisateur();
 		utilisateurToWireToAccount.setEmail("abc@test.com");
@@ -453,7 +392,7 @@ public class TransactionTxHibernateServiceTest {
 	}
 
 	@Test
-	public void wireToAccount_whenAmountNegative() {
+	public void depotSurComptePaymybuddyWhenAmountNegative() {
 		// ARRANGE
 
 		// ACT
@@ -465,7 +404,7 @@ public class TransactionTxHibernateServiceTest {
 	}
 
 	@Test
-	public void wireToAccount_whenUtilisateurNotExist() {
+	public void depotSurComptePaymybuddyWhenUtilisateurNotExist() {
 		// ARRANGE
 		when(repositoryTxManagerMock.openCurrentSessionWithTx()).thenReturn(null);
 		

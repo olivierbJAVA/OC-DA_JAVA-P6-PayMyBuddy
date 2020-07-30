@@ -197,7 +197,7 @@ public class TransactionTxHibernateServiceITest {
 	}
 
 	@Test
-	public void makeATransactionWhenAmountIsPositiveAndInitiateurAndContrepartieExistAndAreConnectedAndSoldeSufficient() {
+	public void transfertCompteACompteWhenAmountIsPositiveAndInitiateurAndContrepartieExistAndAreConnectedAndSoldeSufficient() {
 		// ARRANGE
 		repositoryTxManager.openCurrentSessionWithTx();
 		Utilisateur initiateurBeforeNewTransaction = utilisateurRepositoryImpl.read("abc@test.com");
@@ -239,7 +239,7 @@ public class TransactionTxHibernateServiceITest {
 	}
 
 	@Test
-	public void makeATransactionWhenAmountIsNegative() {
+	public void transfertCompteACompteWhenAmountIsNegative() {
 		// ARRANGE
 		repositoryTxManager.openCurrentSessionWithTx();
 		Utilisateur initiateurBeforeNewTransaction = utilisateurRepositoryImpl.read("abc@test.com");
@@ -274,7 +274,7 @@ public class TransactionTxHibernateServiceITest {
 	}
 
 	@Test
-	public void makeATransactionWhenInitiateurNotExist() {
+	public void transfertCompteACompteWhenInitiateurNotExist() {
 		// ARRANGE
 		repositoryTxManager.openCurrentSessionWithTx();
 		Utilisateur contrepartieBeforeNewTransaction = utilisateurRepositoryImpl.read("def@test.com");
@@ -295,7 +295,7 @@ public class TransactionTxHibernateServiceITest {
 	}
 
 	@Test
-	public void makeATransactionWhenInitiateurExistContrepartieNotExist() {
+	public void transfertCompteACompteWhenInitiateurExistContrepartieNotExist() {
 		// ARRANGE
 		repositoryTxManager.openCurrentSessionWithTx();
 		Utilisateur initiateurBeforeNewTransaction = utilisateurRepositoryImpl.read("abc@test.com");
@@ -324,7 +324,7 @@ public class TransactionTxHibernateServiceITest {
 	}
 
 	@Test
-	public void makeATransactionWhenInitiateurAndContrepartieExistAndAreNotConnected() {
+	public void transfertCompteACompteWhenInitiateurAndContrepartieExistAndAreNotConnected() {
 		// ARRANGE
 		repositoryTxManager.openCurrentSessionWithTx();
 		Utilisateur initiateurBeforeNewTransaction = utilisateurRepositoryImpl.read("abc@test.com");
@@ -357,7 +357,7 @@ public class TransactionTxHibernateServiceITest {
 	}
 
 	@Test
-	public void makeATransactionWhenInitiateurAndContrepartieExistAndAreConnectedAndSoldeNotSufficient() {
+	public void transfertCompteACompteWhenInitiateurAndContrepartieExistAndAreConnectedAndSoldeNotSufficient() {
 		// ARRANGE
 		repositoryTxManager.openCurrentSessionWithTx();
 		Utilisateur initiateurBeforeNewTransaction = utilisateurRepositoryImpl.read("abc@test.com");
@@ -390,7 +390,7 @@ public class TransactionTxHibernateServiceITest {
 	}
 
 	@Test
-	public void makeATransactionWhenInitiateurAndContrepartieAreSame() {
+	public void transfertCompteACompteWhenInitiateurAndContrepartieAreSame() {
 		// ARRANGE
 		repositoryTxManager.openCurrentSessionWithTx();
 		Utilisateur initiateurContrepartieBeforeTransaction = utilisateurRepositoryImpl.read("abc@test.com");
@@ -421,7 +421,7 @@ public class TransactionTxHibernateServiceITest {
 	}
 	
 	@Test
-	public void withdrawalFromAccount_whenUtilisateurExistAndSoldeSufficientAndAmountPositive() {
+	public void virementSurCompteBancaireWhenUtilisateurExistAndSoldeSufficientAndAmountPositive() {
 		// ARRANGE
 		repositoryTxManager.openCurrentSessionWithTx();
 		Utilisateur utilisateurToWithdrawFromAccount = utilisateurRepositoryImpl.read("abc@test.com");
@@ -444,7 +444,7 @@ public class TransactionTxHibernateServiceITest {
 	}
 
 	@Test
-	public void withdrawalFromAccount_whenUtilisateurExistAndAmountNegative() {
+	public void virementSurCompteBancaireWhenUtilisateurExistAndAmountNegative() {
 		// ARRANGE
 		repositoryTxManager.openCurrentSessionWithTx();
 		Utilisateur utilisateurToWithdrawFromAccount = utilisateurRepositoryImpl.read("abc@test.com");
@@ -467,7 +467,7 @@ public class TransactionTxHibernateServiceITest {
 	}
 
 	@Test
-	public void withdrawalFromAccount_whenUtilisateurExistAndSoldeNotSufficient() {
+	public void virementSurCompteBancaireWhenUtilisateurExistAndSoldeNotSufficient() {
 		// ARRANGE
 		repositoryTxManager.openCurrentSessionWithTx();
 		Utilisateur utilisateurToWithdrawFromAccount = utilisateurRepositoryImpl.read("abc@test.com");
@@ -490,7 +490,7 @@ public class TransactionTxHibernateServiceITest {
 	}
 
 	@Test
-	public void withdrawalFromAccount_whenUtilisateurNotExist() {
+	public void virementSurCompteBancaireWhenUtilisateurNotExist() {
 		// ARRANGE
 		
 		// ACT
@@ -502,7 +502,7 @@ public class TransactionTxHibernateServiceITest {
 	}
 
 	@Test
-	public void wireToAccount_whenUtilisateurExistAndAmountPositive() {
+	public void depotSurComptePaymybuddyWhenUtilisateurExistAndAmountPositive() {
 		// ARRANGE
 		repositoryTxManager.openCurrentSessionWithTx();
 		Utilisateur utilisateurToWireToAccount = utilisateurRepositoryImpl.read("abc@test.com");
@@ -524,7 +524,7 @@ public class TransactionTxHibernateServiceITest {
 	}
 
 	@Test
-	public void wireToAccount_whenUtilisateurExistAndAmountNegative() {
+	public void depotSurComptePaymybuddyWhenUtilisateurExistAndAmountNegative() {
 		// ARRANGE
 		repositoryTxManager.openCurrentSessionWithTx();
 		Utilisateur utilisateurToWireToAccount = utilisateurRepositoryImpl.read("abc@test.com");
@@ -545,7 +545,7 @@ public class TransactionTxHibernateServiceITest {
 	}
 
 	@Test
-	public void wireToAccount_whenUtilisateurNotExist() {
+	public void depotSurComptePaymybuddyWhenUtilisateurNotExist() {
 		// ARRANGE
 
 		// ACT
