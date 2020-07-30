@@ -63,11 +63,7 @@ public class UtilisateurTxHibernateService {
 				utilisateurToCreate.setEmail(utilisateurEmail);
 				utilisateurToCreate.setPassword(password);
 				utilisateurToCreate.setSolde(0d);
-				/*
-				 * Set<Utilisateur> connection = new HashSet<>();
-				 * connection.add(utilisateurToCreate);
-				 * utilisateurToCreate.setConnection(connection);
-				 */
+
 				utilisateurRepository.create(utilisateurToCreate);
 
 				// We create the PayMyBuddy account for the utilisateur
@@ -78,16 +74,9 @@ public class UtilisateurTxHibernateService {
 				paymybuddyAccount.setUtilisateur(utilisateurToCreate);
 
 				compteRepository.create(paymybuddyAccount);
-				/*
-				 * Set<Compte> utilisateurComptes = new HashSet<>();
-				 * utilisateurComptes.add(paymybuddyAccount);
-				 */
-
+		
 				// We add the PayMyBuddy account to the utilisateur list of accounts
 				utilisateurRepository.addCompte(utilisateurToCreate, paymybuddyAccount);
-
-				// utilisateurRepository.addConnection(utilisateurToCreate,
-				// utilisateurToCreate);
 
 				repositoryTxManager.commitTx();
 

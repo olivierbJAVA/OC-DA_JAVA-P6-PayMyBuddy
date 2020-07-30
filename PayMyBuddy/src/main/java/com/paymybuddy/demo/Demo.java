@@ -52,7 +52,7 @@ public class Demo {
 				utilisateurRepositoryImpl, compteRepositoryImpl);
 		
 		
-//***** DEMO CAS OK **********************
+//***** DEMO WORKFLOW PAYMYBUDDY **********************
 
 		//S'enregistrer sur l'application
 		utilisateurTxHibernateService.registerToApplication("bertrand.simon@gmail.com", "bs");
@@ -61,7 +61,6 @@ public class Demo {
 		utilisateurTxHibernateService.connectToApplication("bertrand.simon@gmail.com", "bs");
 		
 		// Ajouter un compte bancaire externe
-		utilisateurTxHibernateService.addCompte("bertrand.simon@gmail.com", "123SG", "Societe Generale");
 		utilisateurTxHibernateService.addCompte("bertrand.simon@gmail.com", "123SG", "Societe Generale");
 	
 		//Faire un dépot sur son compte PayMyBuddy
@@ -76,25 +75,6 @@ public class Demo {
 			
 		//Faire un virement à la connection
 		transactionTxHibernateService.transfertCompteACompte("bertrand.simon@gmail.com", "matthieu.dupond@yahoo.fr", 100d, "Transfert compte à compte - Test");
-
-		
-//***** DEMO CAS NOK **********************
-		
-		//S'enregistrer sur l'application (utilisateur existe déjà)
-		utilisateurTxHibernateService.registerToApplication("bertrand.simon@gmail.com", "bs");
-		
-		//Se connecter à l'application (mauvais mot de passe)
-		//utilisateurTxHibernateService.connectToApplication("bertrand.simon@gmail.com", "MAUVAIS_MOT_DE_PASSE");
-		
-		//Faire un virement sur son compte PayMyBuddy (montant négatif)
-		//utilisateurTxHibernateService.wireToAccount("bertrand.simon@gmail.com", -300d);
-	
-		//Ajouter une connection (connection n'existe pas)
-		//utilisateurTxHibernateService.addConnection("bertrand.simon@gmail.com", "emailConnectionNotExist@yahoo.fr");
-		
-		//Faire un virement à la connection (montant supérieur au solde)
-		//transactionTxHibernateService.makeATransaction("bertrand.simon@gmail.com", "matthieu.dupond@yahoo.fr", 1000d, "Transaction test");
-		
 	}
 
 }

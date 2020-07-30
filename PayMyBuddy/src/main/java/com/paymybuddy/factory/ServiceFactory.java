@@ -24,7 +24,7 @@ public class ServiceFactory {
 
 	private ServiceFactory() {
 	}
-	
+
 	/**
 	 * Create a Transaction service.
 	 * 
@@ -36,10 +36,13 @@ public class ServiceFactory {
 	 * @param transactionRepository The Transaction repository to be used by the
 	 *                              Service
 	 * 
+	 * @param compteRepository      The Compte repository to be used by the Service
+	 * 
 	 * @return The Transaction service
 	 */
 	public static TransactionTxHibernateService getTransactionService(RepositoryTxManagerHibernate repositoryTxManager,
-			IUtilisateurRepository utilisateurRepository, ITransactionRepository transactionRepository, ICompteRepository compteRepository) {
+			IUtilisateurRepository utilisateurRepository, ITransactionRepository transactionRepository,
+			ICompteRepository compteRepository) {
 
 		if (transactionService == null) {
 
@@ -58,7 +61,7 @@ public class ServiceFactory {
 	public static void resetTransactionService() {
 
 		transactionService = null;
-		
+
 		logger.info("Factory : Reset Transaction Service with Hibernate Tx management OK");
 
 	}
@@ -71,6 +74,8 @@ public class ServiceFactory {
 	 * @param utilisateurRepository The Utilisateur repository to be used by the
 	 *                              Service
 	 * 
+	 * @param compteRepository      The Compte repository to be used by the Service
+	 * 
 	 * @return The Utilisateur service
 	 */
 	public static UtilisateurTxHibernateService getUtilisateurService(RepositoryTxManagerHibernate repositoryTxManager,
@@ -78,7 +83,8 @@ public class ServiceFactory {
 
 		if (utilisateurService == null) {
 
-			utilisateurService = new UtilisateurTxHibernateService(repositoryTxManager, utilisateurRepository, compteRepository);
+			utilisateurService = new UtilisateurTxHibernateService(repositoryTxManager, utilisateurRepository,
+					compteRepository);
 
 			logger.info("Factory : Creation Utilisateur Service with Hibernate Tx management OK");
 		}
@@ -92,8 +98,8 @@ public class ServiceFactory {
 	public static void resetUtilisateurService() {
 
 		utilisateurService = null;
-		
+
 		logger.info("Factory : Reset Utilisateur Service with Hibernate Tx management OK");
-		
+
 	}
 }

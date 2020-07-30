@@ -87,7 +87,7 @@ public class CompteRepositoryJpaTxHibernateImpl implements ICompteRepository {
 	/**
 	 * Return the paymybuddy account for the user having this email.
 	 * 
-	 * @param emailUtilisateur The email of the user to get accounts
+	 * @param emailUtilisateur The email of the user to get paymybuddy account
 	 * 
 	 * @return The paymybuddy account for the user
 	 */
