@@ -107,12 +107,13 @@ The layers developed on this repository allow to perform the following actions :
 On the **'user'** side :
 - a user can register to the application by providing an email not already existing and a password
 - a user can connect to the application by providing an existing email and the corresponding password
-- a user can wire amount from an external account to its PayMyBuddy account, provided that the wired amount is positive
-- a user can withdraw amount from its PayMyBuddy account to an external account, provided that the withdrawal amount is positive and the user balance is sufficient
+- a user can add external bank accounts
 - a user can add another user to its connections, provided that the connection is registered to the application and that they are not already connected
 
 On the **'transaction'** side :
-- a user can make a transaction to one of its connection, provided that they are connected, the amount of the transaction is positive and the user balance is sufficient
+- a user can make an internal transaction to one of its connection, provided that they are connected, the amount of the transaction is positive and the user balance is sufficient
+- a user can wire amount from an external bank account to its PayMyBuddy account, provided that the wired amount is positive
+- a user can withdraw amount from its PayMyBuddy account to an external bank account, provided that the withdrawal amount is positive and the user balance is sufficient
 - we can get all transactions for an user in order to display them  
 
 
