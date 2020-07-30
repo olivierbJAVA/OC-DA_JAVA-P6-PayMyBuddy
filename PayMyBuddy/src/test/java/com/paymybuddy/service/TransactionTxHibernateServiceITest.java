@@ -18,10 +18,12 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 import com.paymybuddy.configuration.RepositoryDataSource;
 import com.paymybuddy.configuration.RepositoryRessourceDatabasePopulator;
+import com.paymybuddy.entity.Compte;
 import com.paymybuddy.entity.Transaction;
 import com.paymybuddy.entity.Utilisateur;
 import com.paymybuddy.factory.RepositoryFactory;
 import com.paymybuddy.factory.ServiceFactory;
+import com.paymybuddy.repository.ICompteRepository;
 import com.paymybuddy.repository.ITransactionRepository;
 import com.paymybuddy.repository.IUtilisateurRepository;
 import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
@@ -44,6 +46,8 @@ public class TransactionTxHibernateServiceITest {
 
 	private ITransactionRepository transactionRepositoryImpl;
 
+	private ICompteRepository compteRepositoryImpl;
+	
 	private TransactionTxHibernateService transactionTxHibernateServiceUnderTest;
 
 	@BeforeAll
@@ -73,9 +77,12 @@ public class TransactionTxHibernateServiceITest {
 		RepositoryFactory.resetTransactionRepository();
 		transactionRepositoryImpl = RepositoryFactory.getTransactionRepository(repositoryTxManager);
 
+		RepositoryFactory.resetCompteRepository();
+		compteRepositoryImpl = RepositoryFactory.getCompteRepository(repositoryTxManager);
+			
 		ServiceFactory.resetTransactionService();
 		transactionTxHibernateServiceUnderTest = ServiceFactory.getTransactionService(repositoryTxManager,
-				utilisateurRepositoryImpl, transactionRepositoryImpl);
+				utilisateurRepositoryImpl, transactionRepositoryImpl, compteRepositoryImpl);
 	}
 
 	@AfterEach
@@ -93,12 +100,24 @@ public class TransactionTxHibernateServiceITest {
 		transactionToGet1.setInitiateur(initiateur1);
 		transactionToGet1.setContrepartie(contrepartie1);
 		transactionToGet1.setMontant(1d);
+
+		Compte compteInitiateur1 = compteRepositoryImpl.getPayMyBuddyCompte("abc@test.com");
+		Compte compteContrepartie1 = compteRepositoryImpl.getPayMyBuddyCompte("def@test.com");
+		
+		transactionToGet1.setType("transfert");
+		transactionToGet1.setCompte_initiateur(compteInitiateur1);
+		transactionToGet1.setCompte_contrepartie(compteContrepartie1);
+		
 		transactionToGet1 = transactionRepositoryImpl.create(transactionToGet1);
 
 		Transaction transactionToGet2 = new Transaction();
 		transactionToGet2.setInitiateur(initiateur1);
 		transactionToGet2.setContrepartie(contrepartie1);
 		transactionToGet2.setMontant(2d);
+		transactionToGet2.setType("transfert");
+		transactionToGet2.setCompte_initiateur(compteInitiateur1);
+		transactionToGet2.setCompte_contrepartie(compteContrepartie1);
+			
 		transactionToGet2 = transactionRepositoryImpl.create(transactionToGet2);
 
 		Transaction transactionToGet3 = new Transaction();
@@ -106,6 +125,13 @@ public class TransactionTxHibernateServiceITest {
 		transactionToGet3.setInitiateur(initiateur1);
 		transactionToGet3.setContrepartie(contrepartie2);
 		transactionToGet3.setMontant(3d);
+		transactionToGet3.setType("transfert");
+		
+		Compte compteContrepartie2 = compteRepositoryImpl.getPayMyBuddyCompte("ghi@test.com");
+		
+		transactionToGet3.setCompte_initiateur(compteInitiateur1);
+		transactionToGet3.setCompte_contrepartie(compteContrepartie2);
+				
 		transactionToGet3 = transactionRepositoryImpl.create(transactionToGet3);
 		repositoryTxManager.commitTxAndCloseCurrentSession();
 
@@ -182,7 +208,7 @@ public class TransactionTxHibernateServiceITest {
 		listTransactionsBeforeNewTransaction = transactionTxHibernateServiceUnderTest.getTransactions("abc@test.com");
 
 		// ACT
-		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction(
+		boolean result = transactionTxHibernateServiceUnderTest.transfertCompteACompte(
 				initiateurBeforeNewTransaction.getEmail(), contrepartieBeforeNewTransaction.getEmail(), 10d,
 				"Transaction test");
 
@@ -224,7 +250,7 @@ public class TransactionTxHibernateServiceITest {
 		listTransactionsBeforeNewTransaction = transactionTxHibernateServiceUnderTest.getTransactions("abc@test.com");
 
 		// ACT
-		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction(
+		boolean result = transactionTxHibernateServiceUnderTest.transfertCompteACompte(
 				initiateurBeforeNewTransaction.getEmail(), contrepartieBeforeNewTransaction.getEmail(), -10d,
 				"Transaction test");
 
@@ -255,7 +281,7 @@ public class TransactionTxHibernateServiceITest {
 		repositoryTxManager.commitTxAndCloseCurrentSession();
 
 		// ACT
-		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction("UtilisateurInitiateurNotExist",
+		boolean result = transactionTxHibernateServiceUnderTest.transfertCompteACompte("UtilisateurInitiateurNotExist",
 				contrepartieBeforeNewTransaction.getEmail(), 10d, "Transaction test");
 
 		// ASSERT
@@ -279,7 +305,7 @@ public class TransactionTxHibernateServiceITest {
 		listTransactionsBeforeNewTransaction = transactionTxHibernateServiceUnderTest.getTransactions("abc@test.com");
 
 		// ACT
-		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction(
+		boolean result = transactionTxHibernateServiceUnderTest.transfertCompteACompte(
 				initiateurBeforeNewTransaction.getEmail(), "UtilisateurContrepartieNotExist", 10d, "Transaction test");
 
 		// ASSERT
@@ -309,7 +335,7 @@ public class TransactionTxHibernateServiceITest {
 		listTransactionsBeforeNewTransaction = transactionTxHibernateServiceUnderTest.getTransactions("abc@test.com");
 
 		// ACT
-		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction(
+		boolean result = transactionTxHibernateServiceUnderTest.transfertCompteACompte(
 				initiateurBeforeNewTransaction.getEmail(), contrepartieBeforeNewTransaction.getEmail(), 10d,
 				"Transaction test");
 
@@ -342,7 +368,7 @@ public class TransactionTxHibernateServiceITest {
 		listTransactionsBeforeNewTransaction = transactionTxHibernateServiceUnderTest.getTransactions("abc@test.com");
 
 		// ACT
-		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction(
+		boolean result = transactionTxHibernateServiceUnderTest.transfertCompteACompte(
 				initiateurBeforeNewTransaction.getEmail(), contrepartieBeforeNewTransaction.getEmail(), 1000d,
 				"Transaction test");
 
@@ -374,7 +400,7 @@ public class TransactionTxHibernateServiceITest {
 		listTransactionsBeforeNewTransaction = transactionTxHibernateServiceUnderTest.getTransactions("abc@test.com");
 
 		// ACT
-		boolean result = transactionTxHibernateServiceUnderTest.makeATransaction(
+		boolean result = transactionTxHibernateServiceUnderTest.transfertCompteACompte(
 				initiateurContrepartieBeforeTransaction.getEmail(), initiateurContrepartieBeforeTransaction.getEmail(),
 				10d, "Transaction test");
 
@@ -392,5 +418,141 @@ public class TransactionTxHibernateServiceITest {
 		listTransactionsAfterNewTransaction = transactionTxHibernateServiceUnderTest.getTransactions("abc@test.com");
 
 		assertEquals(listTransactionsBeforeNewTransaction.size(), listTransactionsAfterNewTransaction.size());
+	}
+	
+	@Test
+	public void withdrawalFromAccount_whenUtilisateurExistAndSoldeSufficientAndAmountPositive() {
+		// ARRANGE
+		repositoryTxManager.openCurrentSessionWithTx();
+		Utilisateur utilisateurToWithdrawFromAccount = utilisateurRepositoryImpl.read("abc@test.com");
+		repositoryTxManager.commitTxAndCloseCurrentSession();
+		
+		// ACT
+		boolean result = transactionTxHibernateServiceUnderTest
+				.virementSurCompteBancaire(utilisateurToWithdrawFromAccount.getEmail(), 10d, "123SG", "Test");
+
+		// ASSERT
+		assertTrue(result);
+
+		repositoryTxManager.openCurrentSessionWithTx();
+		Utilisateur utilisateurWithdrawnFromAccount = utilisateurRepositoryImpl
+				.read(utilisateurToWithdrawFromAccount.getEmail());
+		repositoryTxManager.commitTxAndCloseCurrentSession();
+
+		assertEquals((double) (utilisateurToWithdrawFromAccount.getSolde() - 10d),
+				(double) utilisateurWithdrawnFromAccount.getSolde());
+	}
+
+	@Test
+	public void withdrawalFromAccount_whenUtilisateurExistAndAmountNegative() {
+		// ARRANGE
+		repositoryTxManager.openCurrentSessionWithTx();
+		Utilisateur utilisateurToWithdrawFromAccount = utilisateurRepositoryImpl.read("abc@test.com");
+		repositoryTxManager.commitTxAndCloseCurrentSession();
+		
+		// ACT
+		boolean result = transactionTxHibernateServiceUnderTest
+				.virementSurCompteBancaire(utilisateurToWithdrawFromAccount.getEmail(), -10d, "123SG", "Test");
+
+		// ASSERT
+		assertFalse(result);
+
+		repositoryTxManager.openCurrentSessionWithTx();
+		Utilisateur utilisateurWithdrawnFromAccount = utilisateurRepositoryImpl
+				.read(utilisateurToWithdrawFromAccount.getEmail());
+		repositoryTxManager.commitTxAndCloseCurrentSession();
+
+		assertEquals((double) (utilisateurToWithdrawFromAccount.getSolde()),
+				(double) utilisateurWithdrawnFromAccount.getSolde());
+	}
+
+	@Test
+	public void withdrawalFromAccount_whenUtilisateurExistAndSoldeNotSufficient() {
+		// ARRANGE
+		repositoryTxManager.openCurrentSessionWithTx();
+		Utilisateur utilisateurToWithdrawFromAccount = utilisateurRepositoryImpl.read("abc@test.com");
+		repositoryTxManager.commitTxAndCloseCurrentSession();
+	
+		// ACT
+		boolean result = transactionTxHibernateServiceUnderTest
+				.virementSurCompteBancaire(utilisateurToWithdrawFromAccount.getEmail(), 1000d, "123SG", "Test");
+
+		// ASSERT
+		assertFalse(result);
+
+		repositoryTxManager.openCurrentSessionWithTx();
+		Utilisateur utilisateurWithdrawnFromAccount = utilisateurRepositoryImpl
+				.read(utilisateurToWithdrawFromAccount.getEmail());
+		repositoryTxManager.commitTxAndCloseCurrentSession();
+
+		assertEquals(utilisateurToWithdrawFromAccount.getSolde(), utilisateurWithdrawnFromAccount.getSolde());
+
+	}
+
+	@Test
+	public void withdrawalFromAccount_whenUtilisateurNotExist() {
+		// ARRANGE
+		
+		// ACT
+		boolean result = transactionTxHibernateServiceUnderTest
+				.virementSurCompteBancaire("NotExist", 1d, "NotExist", "Test");
+
+		// ASSERT
+		assertFalse(result);
+	}
+
+	@Test
+	public void wireToAccount_whenUtilisateurExistAndAmountPositive() {
+		// ARRANGE
+		repositoryTxManager.openCurrentSessionWithTx();
+		Utilisateur utilisateurToWireToAccount = utilisateurRepositoryImpl.read("abc@test.com");
+		repositoryTxManager.commitTxAndCloseCurrentSession();
+	
+		// ACT
+		boolean result = transactionTxHibernateServiceUnderTest
+				.depotSurComptePaymybuddy(utilisateurToWireToAccount.getEmail(), 10d, "123SG", "Test");
+
+		// ASSERT
+		assertTrue(result);
+
+		repositoryTxManager.openCurrentSessionWithTx();
+		Utilisateur utilisateurWiredToAccount = utilisateurRepositoryImpl.read(utilisateurToWireToAccount.getEmail());
+		repositoryTxManager.commitTxAndCloseCurrentSession();
+
+		assertEquals((double) (utilisateurToWireToAccount.getSolde() + 10),
+				(double) utilisateurWiredToAccount.getSolde());
+	}
+
+	@Test
+	public void wireToAccount_whenUtilisateurExistAndAmountNegative() {
+		// ARRANGE
+		repositoryTxManager.openCurrentSessionWithTx();
+		Utilisateur utilisateurToWireToAccount = utilisateurRepositoryImpl.read("abc@test.com");
+		repositoryTxManager.commitTxAndCloseCurrentSession();
+	
+		// ACT
+		boolean result = transactionTxHibernateServiceUnderTest
+				.depotSurComptePaymybuddy(utilisateurToWireToAccount.getEmail(), -10d, "123SG", "Test");
+
+		// ASSERT
+		assertFalse(result);
+
+		repositoryTxManager.openCurrentSessionWithTx();
+		Utilisateur utilisateurWiredToAccount = utilisateurRepositoryImpl.read(utilisateurToWireToAccount.getEmail());
+		repositoryTxManager.commitTxAndCloseCurrentSession();
+
+		assertEquals((double) (utilisateurToWireToAccount.getSolde()), (double) utilisateurWiredToAccount.getSolde());
+	}
+
+	@Test
+	public void wireToAccount_whenUtilisateurNotExist() {
+		// ARRANGE
+
+		// ACT
+		boolean result = transactionTxHibernateServiceUnderTest
+				.depotSurComptePaymybuddy("NotExist", 10d, "NotExist", "Test");
+
+		// ASSERT
+		assertFalse(result);
 	}
 }

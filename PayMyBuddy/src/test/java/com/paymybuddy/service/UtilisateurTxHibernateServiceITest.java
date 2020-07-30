@@ -20,6 +20,7 @@ import com.paymybuddy.configuration.RepositoryRessourceDatabasePopulator;
 import com.paymybuddy.entity.Utilisateur;
 import com.paymybuddy.factory.RepositoryFactory;
 import com.paymybuddy.factory.ServiceFactory;
+import com.paymybuddy.repository.ICompteRepository;
 import com.paymybuddy.repository.IUtilisateurRepository;
 import com.paymybuddy.repositorytxmanager.RepositoryTxManagerHibernate;
 
@@ -39,6 +40,8 @@ public class UtilisateurTxHibernateServiceITest {
 
 	private IUtilisateurRepository utilisateurRepositoryImpl;
 
+	private ICompteRepository compteRepositoryImpl;
+	
 	private UtilisateurTxHibernateService utilisateurTxHibernateServiceUnderTest;
 
 	@BeforeAll
@@ -65,9 +68,12 @@ public class UtilisateurTxHibernateServiceITest {
 		RepositoryFactory.resetUtilisateurRepository();
 		utilisateurRepositoryImpl = RepositoryFactory.getUtilisateurRepository(repositoryTxManager);
 
+		RepositoryFactory.resetCompteRepository();
+		compteRepositoryImpl = RepositoryFactory.getCompteRepository(repositoryTxManager);
+		
 		ServiceFactory.resetUtilisateurService();
 		utilisateurTxHibernateServiceUnderTest = ServiceFactory.getUtilisateurService(repositoryTxManager,
-				utilisateurRepositoryImpl);
+				utilisateurRepositoryImpl, compteRepositoryImpl);
 	}
 
 	@AfterEach
@@ -82,7 +88,7 @@ public class UtilisateurTxHibernateServiceITest {
 		utilisateurToRegister.setEmail("abc@test.com");
 		utilisateurToRegister.setPassword("abc");
 		utilisateurToRegister.setSolde(0d);
-
+		
 		// ACT
 		boolean result = utilisateurTxHibernateServiceUnderTest.registerToApplication(utilisateurToRegister.getEmail(),
 				utilisateurToRegister.getPassword());
@@ -162,175 +168,6 @@ public class UtilisateurTxHibernateServiceITest {
 
 		// ACT
 		boolean result = utilisateurTxHibernateServiceUnderTest.connectToApplication("UtilisateurNotExist", "Password");
-
-		// ASSERT
-		assertFalse(result);
-	}
-
-	@Test
-	public void withdrawalFromAccount_whenUtilisateurExistAndSoldeSufficientAndAmountPositive() {
-		// ARRANGE
-		Utilisateur utilisateurToWithdrawFromAccount = new Utilisateur();
-		utilisateurToWithdrawFromAccount.setEmail("abc@test.com");
-		utilisateurToWithdrawFromAccount.setPassword("abc");
-		utilisateurToWithdrawFromAccount.setSolde(123d);
-
-		repositoryTxManager.openCurrentSessionWithTx();
-		utilisateurRepositoryImpl.create(utilisateurToWithdrawFromAccount);
-		repositoryTxManager.commitTxAndCloseCurrentSession();
-
-		// ACT
-		boolean result = utilisateurTxHibernateServiceUnderTest
-				.withdrawalFromAccount(utilisateurToWithdrawFromAccount.getEmail(), 10d);
-
-		// ASSERT
-		assertTrue(result);
-
-		repositoryTxManager.openCurrentSessionWithTx();
-		Utilisateur utilisateurWithdrawnFromAccount = utilisateurRepositoryImpl
-				.read(utilisateurToWithdrawFromAccount.getEmail());
-		repositoryTxManager.commitTxAndCloseCurrentSession();
-
-		assertEquals((double) (utilisateurToWithdrawFromAccount.getSolde() - 10d),
-				(double) utilisateurWithdrawnFromAccount.getSolde());
-	}
-
-	@Test
-	public void withdrawalFromAccount_whenUtilisateurExistAndAmountNegative() {
-		// ARRANGE
-		Utilisateur utilisateurToWithdrawFromAccount = new Utilisateur();
-		utilisateurToWithdrawFromAccount.setEmail("abc@test.com");
-		utilisateurToWithdrawFromAccount.setPassword("abc");
-		utilisateurToWithdrawFromAccount.setSolde(123d);
-
-		repositoryTxManager.openCurrentSessionWithTx();
-		utilisateurRepositoryImpl.create(utilisateurToWithdrawFromAccount);
-		repositoryTxManager.commitTxAndCloseCurrentSession();
-
-		// ACT
-		boolean result = utilisateurTxHibernateServiceUnderTest
-				.withdrawalFromAccount(utilisateurToWithdrawFromAccount.getEmail(), -10d);
-
-		// ASSERT
-		assertFalse(result);
-
-		repositoryTxManager.openCurrentSessionWithTx();
-		Utilisateur utilisateurWithdrawnFromAccount = utilisateurRepositoryImpl
-				.read(utilisateurToWithdrawFromAccount.getEmail());
-		repositoryTxManager.commitTxAndCloseCurrentSession();
-
-		assertEquals((double) (utilisateurToWithdrawFromAccount.getSolde()),
-				(double) utilisateurWithdrawnFromAccount.getSolde());
-	}
-
-	@Test
-	public void withdrawalFromAccount_whenUtilisateurExistAndSoldeNotSufficient() {
-		// ARRANGE
-		Utilisateur utilisateurToWithdrawFromAccount = new Utilisateur();
-		utilisateurToWithdrawFromAccount.setEmail("abc@test.com");
-		utilisateurToWithdrawFromAccount.setPassword("abc");
-		utilisateurToWithdrawFromAccount.setSolde(1d);
-
-		repositoryTxManager.openCurrentSessionWithTx();
-		utilisateurRepositoryImpl.create(utilisateurToWithdrawFromAccount);
-		repositoryTxManager.commitTxAndCloseCurrentSession();
-
-		// ACT
-		boolean result = utilisateurTxHibernateServiceUnderTest
-				.withdrawalFromAccount(utilisateurToWithdrawFromAccount.getEmail(), 10d);
-
-		// ASSERT
-		assertFalse(result);
-
-		repositoryTxManager.openCurrentSessionWithTx();
-		Utilisateur utilisateurWithdrawnFromAccount = utilisateurRepositoryImpl
-				.read(utilisateurToWithdrawFromAccount.getEmail());
-		repositoryTxManager.commitTxAndCloseCurrentSession();
-
-		assertEquals(utilisateurToWithdrawFromAccount.getSolde(), utilisateurWithdrawnFromAccount.getSolde());
-
-	}
-
-	@Test
-	public void withdrawalFromAccount_whenUtilisateurNotExist() {
-		// ARRANGE
-		Utilisateur utilisateurToWIthdrawFromAccount = new Utilisateur();
-		utilisateurToWIthdrawFromAccount.setEmail("abc@test.com");
-		utilisateurToWIthdrawFromAccount.setPassword("abc");
-		utilisateurToWIthdrawFromAccount.setSolde(123d);
-
-		// ACT
-		boolean result = utilisateurTxHibernateServiceUnderTest
-				.withdrawalFromAccount(utilisateurToWIthdrawFromAccount.getEmail(), 10d);
-
-		// ASSERT
-		assertFalse(result);
-	}
-
-	@Test
-	public void wireToAccount_whenUtilisateurExistAndAmountPositive() {
-		// ARRANGE
-		Utilisateur utilisateurToWireToAccount = new Utilisateur();
-		utilisateurToWireToAccount.setEmail("abc@test.com");
-		utilisateurToWireToAccount.setPassword("abc");
-		utilisateurToWireToAccount.setSolde(123d);
-
-		repositoryTxManager.openCurrentSessionWithTx();
-		utilisateurRepositoryImpl.create(utilisateurToWireToAccount);
-		repositoryTxManager.commitTxAndCloseCurrentSession();
-
-		// ACT
-		boolean result = utilisateurTxHibernateServiceUnderTest.wireToAccount(utilisateurToWireToAccount.getEmail(),
-				10d);
-
-		// ASSERT
-		assertTrue(result);
-
-		repositoryTxManager.openCurrentSessionWithTx();
-		Utilisateur utilisateurWiredToAccount = utilisateurRepositoryImpl.read(utilisateurToWireToAccount.getEmail());
-		repositoryTxManager.commitTxAndCloseCurrentSession();
-
-		assertEquals((double) (utilisateurToWireToAccount.getSolde() + 10),
-				(double) utilisateurWiredToAccount.getSolde());
-	}
-
-	@Test
-	public void wireToAccount_whenUtilisateurExistAndAmountNegative() {
-		// ARRANGE
-		Utilisateur utilisateurToWireToAccount = new Utilisateur();
-		utilisateurToWireToAccount.setEmail("abc@test.com");
-		utilisateurToWireToAccount.setPassword("abc");
-		utilisateurToWireToAccount.setSolde(123d);
-
-		repositoryTxManager.openCurrentSessionWithTx();
-		utilisateurRepositoryImpl.create(utilisateurToWireToAccount);
-		repositoryTxManager.commitTxAndCloseCurrentSession();
-
-		// ACT
-		boolean result = utilisateurTxHibernateServiceUnderTest.wireToAccount(utilisateurToWireToAccount.getEmail(),
-				-10d);
-
-		// ASSERT
-		assertFalse(result);
-
-		repositoryTxManager.openCurrentSessionWithTx();
-		Utilisateur utilisateurWiredToAccount = utilisateurRepositoryImpl.read(utilisateurToWireToAccount.getEmail());
-		repositoryTxManager.commitTxAndCloseCurrentSession();
-
-		assertEquals((double) (utilisateurToWireToAccount.getSolde()), (double) utilisateurWiredToAccount.getSolde());
-	}
-
-	@Test
-	public void wireToAccount_whenUtilisateurNotExist() {
-		// ARRANGE
-		Utilisateur utilisateurToWireToAccount = new Utilisateur();
-		utilisateurToWireToAccount.setEmail("abc@test.com");
-		utilisateurToWireToAccount.setPassword("abc");
-		utilisateurToWireToAccount.setSolde(123d);
-
-		// ACT
-		boolean result = utilisateurTxHibernateServiceUnderTest.wireToAccount(utilisateurToWireToAccount.getEmail(),
-				10d);
 
 		// ASSERT
 		assertFalse(result);
@@ -478,37 +315,6 @@ public class UtilisateurTxHibernateServiceITest {
 		utilisateurConnections = utilisateurWithAddedConnection.getConnection();
 
 		assertEquals(1, utilisateurConnections.size());
-
-		repositoryTxManager.commitTxAndCloseCurrentSession();
-	}
-
-	@Test
-	public void addConnection_whenUtilisateurAndConnectionAreSame() {
-		// ARRANGE
-		Utilisateur utilisateurToAddConnection = new Utilisateur();
-		utilisateurToAddConnection.setEmail("abc@test.com");
-		utilisateurToAddConnection.setPassword("abc");
-		utilisateurToAddConnection.setSolde(0d);
-
-		repositoryTxManager.openCurrentSessionWithTx();
-		utilisateurRepositoryImpl.create(utilisateurToAddConnection);
-		repositoryTxManager.commitTxAndCloseCurrentSession();
-
-		// ACT
-		boolean result = utilisateurTxHibernateServiceUnderTest.addConnection(utilisateurToAddConnection.getEmail(),
-				utilisateurToAddConnection.getEmail());
-
-		// ASSERT
-		assertFalse(result);
-
-		repositoryTxManager.openCurrentSessionWithTx();
-
-		Utilisateur utilisateurWithNoAddedConnection = utilisateurRepositoryImpl
-				.read(utilisateurToAddConnection.getEmail());
-		Set<Utilisateur> utilisateurConnections = new HashSet<>();
-		utilisateurConnections = utilisateurWithNoAddedConnection.getConnection();
-
-		assertEquals(0, utilisateurConnections.size());
 
 		repositoryTxManager.commitTxAndCloseCurrentSession();
 	}

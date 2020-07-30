@@ -18,6 +18,7 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 import com.paymybuddy.configuration.RepositoryDataSource;
 import com.paymybuddy.configuration.RepositoryRessourceDatabasePopulator;
+import com.paymybuddy.entity.Compte;
 import com.paymybuddy.entity.Transaction;
 import com.paymybuddy.entity.Utilisateur;
 import com.paymybuddy.factory.RepositoryFactory;
@@ -39,6 +40,8 @@ public class TransactionRepositoryJpaTxHibernateImplITest {
 
 	private ITransactionRepository transactionRepositoryImplUnderTest;
 
+	private ICompteRepository compteRepositoryImpl;
+	
 	private IUtilisateurRepository utilisateurRepositoryImp;
 
 	@BeforeAll
@@ -68,6 +71,9 @@ public class TransactionRepositoryJpaTxHibernateImplITest {
 		RepositoryFactory.resetTransactionRepository();
 		transactionRepositoryImplUnderTest = RepositoryFactory.getTransactionRepository(repositoryTxManager);
 
+		RepositoryFactory.resetCompteRepository();
+		compteRepositoryImpl = RepositoryFactory.getCompteRepository(repositoryTxManager);
+		
 		repositoryTxManager.openCurrentSessionWithTx();
 	}
 
@@ -83,12 +89,18 @@ public class TransactionRepositoryJpaTxHibernateImplITest {
 		Utilisateur initiateur = utilisateurRepositoryImp.read("abc@test.com");
 		Utilisateur contrepartie = utilisateurRepositoryImp.read("def@test.com");
 
+		Compte compteInitiateur = compteRepositoryImpl.getPayMyBuddyCompte("abc@test.com");
+		Compte compteContrepartie = compteRepositoryImpl.getPayMyBuddyCompte("def@test.com");
+				
 		Transaction transactionToCreate = new Transaction();
 		transactionToCreate.setInitiateur(initiateur);
 		transactionToCreate.setContrepartie(contrepartie);
 		transactionToCreate.setMontant(123d);
 		transactionToCreate.setCommentaire("Transaction created for test purpose");
-
+		transactionToCreate.setType("transfert");
+		transactionToCreate.setCompte_initiateur(compteInitiateur);
+		transactionToCreate.setCompte_contrepartie(compteContrepartie);
+		
 		// ACT
 		Transaction transactionCreated = transactionRepositoryImplUnderTest.create(transactionToCreate);
 		repositoryTxManager.commitTx();
@@ -116,12 +128,18 @@ public class TransactionRepositoryJpaTxHibernateImplITest {
 		Utilisateur initiateur = utilisateurRepositoryImp.read("abc@test.com");
 		Utilisateur contrepartie = utilisateurRepositoryImp.read("def@test.com");
 
+		Compte compteInitiateur = compteRepositoryImpl.getPayMyBuddyCompte("abc@test.com");
+		Compte compteContrepartie = compteRepositoryImpl.getPayMyBuddyCompte("def@test.com");
+			
 		Transaction transactionToDelete = new Transaction();
 		transactionToDelete.setInitiateur(initiateur);
 		transactionToDelete.setContrepartie(contrepartie);
 		transactionToDelete.setMontant(123d);
 		transactionToDelete.setCommentaire("Transaction created for test purpose");
-
+		transactionToDelete.setType("transfert");
+		transactionToDelete.setCompte_initiateur(compteInitiateur);
+		transactionToDelete.setCompte_contrepartie(compteContrepartie);
+			
 		Transaction transactionDeleted = transactionRepositoryImplUnderTest.create(transactionToDelete);
 
 		// ACT
@@ -138,12 +156,18 @@ public class TransactionRepositoryJpaTxHibernateImplITest {
 		Utilisateur initiateur = utilisateurRepositoryImp.read("abc@test.com");
 		Utilisateur contrepartie = utilisateurRepositoryImp.read("def@test.com");
 
+		Compte compteInitiateur = compteRepositoryImpl.getPayMyBuddyCompte("abc@test.com");
+		Compte compteContrepartie = compteRepositoryImpl.getPayMyBuddyCompte("def@test.com");
+		
 		Transaction transactionToUpdate = new Transaction();
 		transactionToUpdate.setInitiateur(initiateur);
 		transactionToUpdate.setContrepartie(contrepartie);
 		transactionToUpdate.setMontant(321d);
 		transactionToUpdate.setCommentaire("Transaction created for test purpose");
-
+		transactionToUpdate.setType("transfert");
+		transactionToUpdate.setCompte_initiateur(compteInitiateur);
+		transactionToUpdate.setCompte_contrepartie(compteContrepartie);
+			
 		transactionToUpdate = transactionRepositoryImplUnderTest.create(transactionToUpdate);
 
 		// ACT
@@ -166,12 +190,18 @@ public class TransactionRepositoryJpaTxHibernateImplITest {
 		Utilisateur initiateur = utilisateurRepositoryImp.read("abc@test.com");
 		Utilisateur contrepartie = utilisateurRepositoryImp.read("def@test.com");
 
+		Compte compteInitiateur = compteRepositoryImpl.getPayMyBuddyCompte("abc@test.com");
+		Compte compteContrepartie = compteRepositoryImpl.getPayMyBuddyCompte("def@test.com");
+			
 		Transaction transactionToRead = new Transaction();
 		transactionToRead.setInitiateur(initiateur);
 		transactionToRead.setContrepartie(contrepartie);
 		transactionToRead.setMontant(123d);
 		transactionToRead.setCommentaire("Transaction created for test purpose");
-
+		transactionToRead.setType("transfert");
+		transactionToRead.setCompte_initiateur(compteInitiateur);
+		transactionToRead.setCompte_contrepartie(compteContrepartie);
+	
 		transactionToRead = transactionRepositoryImplUnderTest.create(transactionToRead);
 
 		// ACT
@@ -209,12 +239,24 @@ public class TransactionRepositoryJpaTxHibernateImplITest {
 		transactionToGet1.setInitiateur(initiateur1);
 		transactionToGet1.setContrepartie(contrepartie1);
 		transactionToGet1.setMontant(1d);
+
+		Compte compteInitiateur1 = compteRepositoryImpl.getPayMyBuddyCompte("abc@test.com");
+		Compte compteContrepartie1 = compteRepositoryImpl.getPayMyBuddyCompte("def@test.com");
+		
+		transactionToGet1.setType("transfert");
+		transactionToGet1.setCompte_initiateur(compteInitiateur1);
+		transactionToGet1.setCompte_contrepartie(compteContrepartie1);
+	
 		transactionToGet1 = transactionRepositoryImplUnderTest.create(transactionToGet1);
 
 		Transaction transactionToGet2 = new Transaction();
 		transactionToGet2.setInitiateur(initiateur1);
 		transactionToGet2.setContrepartie(contrepartie1);
 		transactionToGet2.setMontant(2d);
+		transactionToGet2.setType("transfert");
+		transactionToGet2.setCompte_initiateur(compteInitiateur1);
+		transactionToGet2.setCompte_contrepartie(compteContrepartie1);
+	
 		transactionToGet2 = transactionRepositoryImplUnderTest.create(transactionToGet2);
 
 		Transaction transactionToGet3 = new Transaction();
@@ -222,6 +264,12 @@ public class TransactionRepositoryJpaTxHibernateImplITest {
 		transactionToGet3.setInitiateur(initiateur1);
 		transactionToGet3.setContrepartie(contrepartie2);
 		transactionToGet3.setMontant(3d);
+		transactionToGet3.setType("transfert");
+		Compte compteContrepartie2 = compteRepositoryImpl.getPayMyBuddyCompte("ghi@test.com");
+		
+		transactionToGet3.setCompte_initiateur(compteInitiateur1);
+		transactionToGet3.setCompte_contrepartie(compteContrepartie2);
+		
 		transactionToGet3 = transactionRepositoryImplUnderTest.create(transactionToGet3);
 
 		// ACT
