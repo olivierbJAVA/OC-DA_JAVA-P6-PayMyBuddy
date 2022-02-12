@@ -151,4 +151,3 @@ For the **JDBC** and **JPA feature** branches, you have to update the database c
 You will find below the Database conception schema :
 
 ![Alt text](PayMyBuddy/Schema_base_de_donnes.jpeg)
-
